@@ -163,6 +163,15 @@
     .next-steps li{font-size:.9rem;color:var(--ink);line-height:1.6;padding-left:1.4rem;position:relative}
     .next-steps li::before{content:'→';position:absolute;left:0;color:var(--teal)}
     @media(max-width:720px){.limits-grid{grid-template-columns:1fr}.stat-block{grid-template-columns:1fr}}
+    .vibe-box{background:rgba(212,147,13,0.06);border-left:3px solid var(--gold);padding:1.25rem 1.5rem;margin:2rem 0;border-radius:0 6px 6px 0}
+    .vibe-box p{font-size:.92rem;line-height:1.75;color:var(--ink)}
+    .vibe-box strong{color:#A07300}
+    .ideas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);border-radius:6px;overflow:hidden;margin:2rem 0}
+    .idea-card{background:var(--surface);padding:1.5rem}
+    .idea-num{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--ink3);margin-bottom:.75rem;letter-spacing:.12em}
+    .idea-title{font-weight:600;font-size:.97rem;margin-bottom:.35rem;line-height:1.3}
+    .idea-desc{font-size:.87rem;color:var(--ink2);line-height:1.6}
+    @media(max-width:560px){.ideas-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -399,6 +408,10 @@
       </div>
     </div>
     <p class="reveal" style="font-size:.75rem;color:var(--ink3);transition-delay:.2s">Ein Auftrag. Ein Subagent recherchiert eigenständig. Der Hauptagent ändert gezielt drei Stellen. Automatisch getestet und veröffentlicht.</p>
+
+    <div class="vibe-box reveal" style="transition-delay:.24s">
+      <p><strong>Vibe Coding</strong> — der Begriff, den Andrej Karpathy (Mitgründer OpenAI, ehemals Tesla KI-Chef) für diese Arbeitsweise geprägt hat: Man schreibt keinen Code mehr, man beschreibt das Ziel. Die KI baut. Man prüft, lenkt nach, gibt die Richtung vor. Programmieren wird zu Regie führen — und damit zugänglich für jeden, der eine gute Idee hat.</p>
+    </div>
   </div>
 </section>
 
@@ -407,25 +420,24 @@
   <div class="container">
     <div class="reveal">
       <p class="sl">Live-Demos</p>
-      <p class="demo-intro">Drei Produkte, die genau so entstanden sind. Alle in wenigen Stunden gebaut. Alle jetzt live.</p>
+      <h2 class="st">Jetzt zeige ich euch drei Beispiele live.</h2>
+      <p class="ss">Rein persönliche Projekte aus den letzten zwei Monaten — in der Freizeit, mit 20 €/Monat. Kein Team, keine Agentur. Was als externes Digitalprojekt früher Monate und einen fünfstelligen Budgetrahmen gebraucht hätte.</p>
     </div>
-    <p class="reveal" style="font-size:.85rem;color:var(--ink3);margin:-.25rem 0 1.25rem;transition-delay:.05s;line-height:1.7">Zur Einordnung: Das sind rein persönliche Projekte aus den letzten zwei Monaten — in der Freizeit gebaut, mit einem Budget von 20 €/Monat. Kein Entwicklerteam, keine Agentur. Was als externes Digitalprojekt früher Monate und einen fünfstelligen Budgetrahmen gebraucht hätte.</p>
-
     <div class="demo-grid reveal" style="transition-delay:.08s">
-      <a class="demo-card" href="https://johakunath.github.io/iSFP-Schnellcheck/" target="_blank" rel="noopener">
-        <p class="demo-num">01</p>
-        <h3>Sanierungs&shy;fahrplan-Tool</h3>
-        <p>Interaktiver Schnellcheck für Gebäudesanierung mit Förderlogik und Maßnahmen&shy;empfehlung.</p>
+      <a class="demo-card" href="https://johakunath.github.io/Contracting-Demo-Website/" target="_blank" rel="noopener">
+        <p class="demo-num">Demo 01</p>
+        <h3>Wärme&shy;contracting-Website</h3>
+        <p>Professionelle Produktwebsite für Wärmecontracting — vollständig mit KI gebaut, in wenigen Stunden. Zeigt, wie Außendarstellung und Produktkommunikation heute entstehen.</p>
       </a>
       <a class="demo-card" href="https://koepenick-kiezradar.vercel.app/" target="_blank" rel="noopener">
-        <p class="demo-num">02</p>
+        <p class="demo-num">Demo 02</p>
         <h3>Köpenick Kiezradar</h3>
-        <p>KI-angereicherter Informations&shy;dienst für ein Berliner Stadtviertel. Echtzeit-Daten, interaktive Karte.</p>
+        <p>KI-angereicherter Informationsdienst für ein Berliner Stadtviertel — mit Echtzeit-Daten und interaktiver Karte. Persönliches Experimentierfeld für datengetriebene Produkte.</p>
       </a>
-      <a class="demo-card" href="https://johakunath.github.io/Contracting-Demo-Website/" target="_blank" rel="noopener">
-        <p class="demo-num">03</p>
-        <h3>Contracting Demo-Website</h3>
-        <p>Professionelle Produkt&shy;website für Wärme&shy;contracting. Fertig in wenigen Stunden, sofort online.</p>
+      <a class="demo-card" href="https://johakunath.github.io/iSFP-Schnellcheck/" target="_blank" rel="noopener">
+        <p class="demo-num">Demo 03 — Fachlicher Use Case</p>
+        <h3>Sanierungs&shy;fahrplan-Tool</h3>
+        <p>Interaktiver Schnellcheck für Gebäudesanierung mit integrierter Förderlogik und Maßnahmen&shy;empfehlung. Das komplexeste Beispiel — und das, das unserem Kerngeschäft am nächsten kommt.</p>
       </a>
     </div>
   </div>
@@ -468,8 +480,8 @@
 <section id="meaning">
   <div class="container">
     <div class="reveal">
-      <p class="sl">Zum Nachdenken</p>
-      <h2 class="st">Fragen, die wir beantworten müssen.</h2>
+      <p class="sl">Fragen aus dem Management</p>
+      <h2 class="st">Was sich das Führungsteam fragen sollte.</h2>
     </div>
     <ul class="q-list reveal" style="transition-delay:.08s">
       <li>Basieren unsere Annahmen darüber, was KI kann, noch auf dem ChatGPT von 2023?</li>
@@ -484,6 +496,44 @@
         <li>Einen echten Alltagsprozess beschreiben und schauen, was die KI daraus macht</li>
         <li>Klein anfangen: ein Dokument überarbeiten, eine Tabelle analysieren, ein internes Tool skizzieren</li>
       </ul>
+    </div>
+  </div>
+</section>
+
+<!-- IDEAS -->
+<section id="ideas">
+  <div class="container">
+    <div class="reveal">
+      <p class="sl">Potenzielle Vibe-Coding-Projekte</p>
+      <h2 class="st">Was wir damit bauen könnten.</h2>
+      <p class="ss">Fünf konkrete Anwendungsfelder — ohne großes Entwicklerteam, in Wochen statt Monaten.</p>
+    </div>
+    <div class="ideas-grid reveal" style="transition-delay:.08s">
+      <div class="idea-card">
+        <p class="idea-num">01</p>
+        <p class="idea-title">Richtpreisangebots-Tool</p>
+        <p class="idea-desc">Gebäudedaten eingeben, sofort eine belastbare Grobkalkulation für das Erstgespräch mit dem Kunden. Weniger Vorlaufzeit, bessere Gesprächsvorbereitung.</p>
+      </div>
+      <div class="idea-card">
+        <p class="idea-num">02</p>
+        <p class="idea-title">Dekarbonisierungs-Navigator</p>
+        <p class="idea-desc">Welche Maßnahmen in welcher Reihenfolge, mit welcher Förderung? Interaktiver Pfad zur CO₂-Neutralität, individuell auf jede Liegenschaft zugeschnitten.</p>
+      </div>
+      <div class="idea-card">
+        <p class="idea-num">03</p>
+        <p class="idea-title">Stakeholder-Präsentations-Generator</p>
+        <p class="idea-desc">Projektergebnisse, Verbrauchsdaten und Einsparpotenziale automatisch in eine aufbereitete Kundenpräsentation übersetzen — ohne stundenlange PowerPoint-Arbeit.</p>
+      </div>
+      <div class="idea-card">
+        <p class="idea-num">04</p>
+        <p class="idea-title">Fördermittel-Finder</p>
+        <p class="idea-desc">Maßnahmenpaket und Gebäudedaten eingeben, automatisch passende Förderprogramme abgleichen und Beantragungsschritte vorschlagen. Aktuell mit BEW, BAFA, KfW.</p>
+      </div>
+      <div class="idea-card" style="grid-column:1/-1">
+        <p class="idea-num">05</p>
+        <p class="idea-title">Ausschreibungs-Assistent</p>
+        <p class="idea-desc">Ausschreibungsunterlagen einlesen lassen, Kernanforderungen und Fristen automatisch extrahieren, strukturierte Angebotsgrundlage generieren. Weniger manuelle Auswertungsarbeit, schnellere Reaktionszeiten.</p>
+      </div>
     </div>
   </div>
 </section>
