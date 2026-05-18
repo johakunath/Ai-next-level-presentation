@@ -149,6 +149,20 @@
     #lb-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:2rem;animation:lb-in .15s ease}
     @keyframes lb-in{from{opacity:0}to{opacity:1}}
     #lb-overlay img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 4px 60px rgba(0,0,0,.5)}
+    .stat-block{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem 1.75rem;margin:2rem 0;display:grid;grid-template-columns:auto 1fr;gap:1.25rem 2rem;align-items:center}
+    .stat-num{font-family:'Fraunces',serif;font-size:3rem;font-weight:800;color:var(--teal);line-height:1;letter-spacing:-.03em;white-space:nowrap}
+    .stat-text{font-size:.95rem;color:var(--ink);line-height:1.7;margin-bottom:.4rem}
+    .stat-quote{font-size:.88rem;color:var(--ink2);line-height:1.65;font-style:italic;border-left:2px solid var(--teal-mid);padding-left:.75rem;margin-top:.5rem}
+    .limits-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:2rem 0}
+    .limit-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:1.25rem 1.5rem}
+    .limit-title{font-weight:600;font-size:.97rem;margin-bottom:.4rem}
+    .limit-desc{font-size:.88rem;color:var(--ink2);line-height:1.65}
+    .next-box{background:var(--teal-dim);border:1px solid var(--teal-mid);border-radius:6px;padding:1.5rem 1.75rem;margin:2rem 0}
+    .next-box .next-title{font-weight:600;font-size:.97rem;margin-bottom:1rem;color:var(--teal)}
+    .next-steps{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+    .next-steps li{font-size:.9rem;color:var(--ink);line-height:1.6;padding-left:1.4rem;position:relative}
+    .next-steps li::before{content:'→';position:absolute;left:0;color:var(--teal)}
+    @media(max-width:720px){.limits-grid{grid-template-columns:1fr}.stat-block{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -352,6 +366,14 @@
       <p>Das Entscheidende: Die KI arbeitet heute <strong>direkt in deinen Systemen</strong>. Sie liest Dateien, greift auf E-Mail, Kalender und Datenbanken zu — über sogenannte MCP-Verbindungen. Und sie ändert <strong>gezielt einzelne Stellen</strong> in bestehenden Dokumenten und Programmen, statt alles auf einmal neu zu generieren. Das Hin-und-Her-Kopieren zwischen Chat und Anwendung entfällt komplett.</p>
     </div>
 
+    <div class="stat-block reveal" style="transition-delay:.13s">
+      <div class="stat-num">90 %</div>
+      <div>
+        <p class="stat-text">Anthropic schreibt inzwischen 90 % des eigenen Codes direkt mit Claude Code — jeder im Team, nicht nur Entwickler. OpenAI bietet mit ChatGPT Codex ein vergleichbares Tool für 20 €/Monat an.</p>
+        <p class="stat-quote">Der Engpass ist nicht mehr das Coden. Was jetzt zählt: die Idee haben, Geschmack und Urteilsvermögen.</p>
+      </div>
+    </div>
+
     <p class="reveal" style="font-size:.85rem;color:var(--ink2);margin-bottom:.25rem;transition-delay:.15s">So sieht das in der Praxis aus — inklusive einem Subagenten, der eigenständig recherchiert:</p>
     <div class="terminal reveal" style="transition-delay:.18s">
       <div class="t-bar"><span class="td"></span><span class="td"></span><span class="td"></span></div>
@@ -387,6 +409,8 @@
       <p class="sl">Live-Demos</p>
       <p class="demo-intro">Drei Produkte, die genau so entstanden sind. Alle in wenigen Stunden gebaut. Alle jetzt live.</p>
     </div>
+    <p class="reveal" style="font-size:.85rem;color:var(--ink3);margin:-.25rem 0 1.25rem;transition-delay:.05s;line-height:1.7">Zur Einordnung: Das sind rein persönliche Projekte aus den letzten zwei Monaten — in der Freizeit gebaut, mit einem Budget von 20 €/Monat. Kein Entwicklerteam, keine Agentur. Was als externes Digitalprojekt früher Monate und einen fünfstelligen Budgetrahmen gebraucht hätte.</p>
+
     <div class="demo-grid reveal" style="transition-delay:.08s">
       <a class="demo-card" href="https://johakunath.github.io/iSFP-Schnellcheck/" target="_blank" rel="noopener">
         <p class="demo-num">01</p>
@@ -407,6 +431,39 @@
   </div>
 </section>
 
+<!-- LIMITS -->
+<section id="limits">
+  <div class="container">
+    <div class="reveal">
+      <p class="sl">Was man wissen muss</p>
+      <h2 class="st">Grenzen und offene Fragen.</h2>
+      <p class="ss">Agentische KI ist leistungsstark — und bringt Verantwortung mit. Diese fünf Themen müssen wir ernstnehmen.</p>
+    </div>
+    <div class="limits-grid reveal" style="transition-delay:.08s">
+      <div class="limit-card">
+        <p class="limit-title">Präzision</p>
+        <p class="limit-desc">KI erfindet Fakten, übersieht Details, macht Rechenfehler. Outputs müssen geprüft werden — besonders bei Zahlen, Rechtslagen und Fachdetails. Ein Mensch im Prozess bleibt zwingend.</p>
+      </div>
+      <div class="limit-card">
+        <p class="limit-title">Datenschutz &amp; Sicherheit</p>
+        <p class="limit-desc">Eingaben gehen an externe Cloud-Anbieter. Kundendaten, Verträge und interne Kennzahlen gehören nicht ungeprüft in einen externen Dienst. Klärungsbedarf: Welche Daten dürfen genutzt werden, welche Verarbeitungsvereinbarungen bestehen?</p>
+      </div>
+      <div class="limit-card">
+        <p class="limit-title">Compliance &amp; EU AI Act</p>
+        <p class="limit-desc">Seit August 2024 gilt der EU AI Act. Hochrisiko-Anwendungen — z. B. in Personalentscheidungen oder kritischer Infrastruktur — unterliegen strengen Pflichten. Welche unserer Einsatzszenarien fallen darunter?</p>
+      </div>
+      <div class="limit-card">
+        <p class="limit-title">Nachvollziehbarkeit (Auditability)</p>
+        <p class="limit-desc">In regulierten Bereichen reicht „die KI hat das entschieden" nicht. Entscheidungswege, Datenquellen und Outputs müssen rückverfolgbar und prüffähig dokumentiert sein.</p>
+      </div>
+      <div class="limit-card" style="grid-column:1/-1">
+        <p class="limit-title">Verantwortung (Accountability)</p>
+        <p class="limit-desc">KI trägt keine Verantwortung. Rechtlich und ethisch bleiben Menschen — und Organisationen — für alle Ergebnisse haftbar. Das muss in Prozessen, Rollen und Governance klar verankert sein, bevor KI in kritische Abläufe integriert wird.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- QUESTIONS -->
 <section id="meaning">
   <div class="container">
@@ -420,6 +477,14 @@
       <li>Welche Rollen in unserer Organisation verändern sich gerade — gestalten wir das aktiv?</li>
       <li>Was kostet es uns, noch ein Jahr abzuwarten?</li>
     </ul>
+    <div class="next-box reveal" style="transition-delay:.16s">
+      <p class="next-title">Wie fange ich an?</p>
+      <ul class="next-steps">
+        <li>Claude.ai oder ChatGPT Plus ausprobieren — kostet 20 €/Monat</li>
+        <li>Einen echten Alltagsprozess beschreiben und schauen, was die KI daraus macht</li>
+        <li>Klein anfangen: ein Dokument überarbeiten, eine Tabelle analysieren, ein internes Tool skizzieren</li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -431,7 +496,8 @@
       Die Frage ist nicht, ob sich etwas verändert.<br>
       <span class="accent">Die Frage ist, ob wir mitgestalten.</span>
     </p>
-    <div class="footer reveal" style="transition-delay:.16s">Internes Format · Mai 2026</div>
+    <p class="reveal" style="font-size:.88rem;color:var(--ink2);margin:1.75rem 0 0;transition-delay:.12s;line-height:1.7">Ich gehe gerne mit euch in die Tiefe — was das konkret für unsere Arbeit und Organisation bedeutet.</p>
+    <div class="footer reveal" style="transition-delay:.2s">Internes Format · Mai 2026</div>
   </div>
 </section>
 
