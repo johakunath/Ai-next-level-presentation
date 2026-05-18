@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KI 2026 — Was sich verändert hat</title>
+  <title>Das nächste Level der KI — Mai 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,800;1,9..144,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -20,9 +20,9 @@
     }
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--ink);font-family:'Outfit',sans-serif;font-weight:400;line-height:1.7;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-    .container{max-width:900px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem)}
+    .container{max-width:1350px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem)}
     /* wider container for tier list */
-    .container-wide{max-width:1040px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem)}
+    .container-wide{max-width:1560px;margin:0 auto;padding:0 clamp(1.5rem,5vw,4rem)}
     section{padding:5rem 0;position:relative}
 
     nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem clamp(1.5rem,5vw,4rem);background:rgba(244,245,241,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);transition:box-shadow .3s}
@@ -53,24 +53,24 @@
     .tl-date{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--ink3);letter-spacing:.1em;margin-bottom:.15rem}
     .tl-item.hot .tl-date{color:var(--teal)}
     .tl-item.now .tl-date{color:var(--gold)}
-    .tl-head{font-weight:600;font-size:.95rem;margin-bottom:.2rem}
-    .tl-desc{font-size:.83rem;color:var(--ink2);line-height:1.65}
+    .tl-head{font-weight:600;font-size:1.08rem;margin-bottom:.2rem}
+    .tl-desc{font-size:.97rem;color:var(--ink2);line-height:1.65}
 
     /* CHART */
     .chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.75rem 1.75rem 1rem;margin:2rem 0}
-    .chart-title{font-weight:600;font-size:.88rem;margin-bottom:.2rem}
-    .chart-sub{font-size:.73rem;color:var(--ink3);margin-bottom:1rem;line-height:1.6}
+    .chart-title{font-weight:600;font-size:1.05rem;margin-bottom:.2rem}
+    .chart-sub{font-size:.92rem;color:var(--ink3);margin-bottom:1rem;line-height:1.6}
     .chart-wrap svg{width:100%;height:auto;display:block}
-    .chart-src{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--ink3);margin-top:.85rem}
+    .chart-src{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--ink3);margin-top:.85rem}
 
     /* TIER LIST */
     .tier-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--border);border-radius:6px;overflow:hidden;margin:2rem 0}
     .tier-row{display:grid;grid-template-columns:200px 1fr;background:var(--surface)}
     .tier-label{padding:1.1rem 1.25rem;display:flex;flex-direction:column;justify-content:center;gap:.15rem}
-    .tier-name{font-weight:600;font-size:.85rem;line-height:1.3}
-    .tier-sub{font-size:.7rem;color:var(--ink3);line-height:1.4}
+    .tier-name{font-weight:600;font-size:1rem;line-height:1.3}
+    .tier-sub{font-size:.83rem;color:var(--ink3);line-height:1.4}
     .tier-tools{padding:1rem 1.25rem;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
-    .tt{font-family:'JetBrains Mono',monospace;font-size:.66rem;padding:.3rem .7rem;border-radius:100px;border:1px solid;white-space:nowrap}
+    .tt{font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.3rem .7rem;border-radius:100px;border:1px solid;white-space:nowrap}
     /* tier colors */
     .tier-row.t1 .tier-label{background:var(--teal-dim);border-right:1px solid var(--border)}
     .tier-row.t1 .tier-name{color:var(--teal)}
@@ -84,24 +84,24 @@
     .tier-row.t4 .tier-label{background:var(--purple-dim);border-right:1px solid var(--border)}
     .tier-row.t4 .tier-name{color:var(--purple)}
     .tier-row.t4 .tt{border-color:var(--purple-mid);color:var(--purple);background:var(--purple-dim)}
-    .tier-note{font-size:.73rem;color:var(--ink3);margin-top:.5rem}
+    .tier-note{font-size:.87rem;color:var(--ink3);margin-top:.5rem}
 
     /* FLOW */
     .flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
     .flow-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem 1.5rem 1.25rem}
     .flow-card.agent{border-color:var(--teal-mid);background:var(--teal-dim)}
-    .flow-tag{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);margin-bottom:1.15rem}
+    .flow-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);margin-bottom:1.15rem}
     .flow-card.agent .flow-tag{color:var(--teal)}
     .flow-visual{display:flex;flex-direction:column;gap:0;margin-bottom:1rem}
     .fs{display:flex;align-items:center;gap:.65rem;padding:.35rem 0}
     .fi{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;flex-shrink:0;font-weight:500}
     .fi.h{background:#E2E3DE;color:var(--ink2)}
     .fi.a{background:var(--teal-mid);color:var(--teal)}
-    .fs-t{font-size:.78rem;color:var(--ink2)}
+    .fs-t{font-size:.95rem;color:var(--ink2)}
     .flow-card.agent .fs-t{color:var(--ink)}
     .fa{width:1px;height:10px;background:var(--border);margin-left:11.5px}
     .flow-card.agent .fa{background:var(--teal-mid)}
-    .flow-res{font-size:.78rem;padding:.55rem .75rem;border-radius:4px;background:var(--bg);color:var(--ink2)}
+    .flow-res{font-size:.95rem;padding:.55rem .75rem;border-radius:4px;background:var(--bg);color:var(--ink2)}
     .flow-card.agent .flow-res{background:rgba(11,107,94,0.08);color:var(--teal);font-weight:500}
 
     /* KEY BOX */
@@ -140,21 +140,26 @@
 
     @media(max-width:720px){
       .flow-grid,.demo-grid{grid-template-columns:1fr}
-      .tier-row{grid-template-columns:1fr;} 
+      .tier-row{grid-template-columns:1fr;}
       .tier-label{padding:.75rem 1rem;border-right:none!important;border-bottom:1px solid var(--border)}
       .img-grid{grid-template-columns:1fr!important}
     }
+    .img-grid img{cursor:zoom-in;transition:opacity .2s}
+    .img-grid img:hover{opacity:.88}
+    #lb-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:2rem;animation:lb-in .15s ease}
+    @keyframes lb-in{from{opacity:0}to{opacity:1}}
+    #lb-overlay img{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;box-shadow:0 4px 60px rgba(0,0,0,.5)}
   </style>
 </head>
 <body>
 
-<nav id="nav"><span class="nav-title">Mai 2026 · KI-Einordnung</span></nav>
+<nav id="nav"><span class="nav-title">Mai 2026 · Agentische KI</span></nav>
 
 <!-- HERO -->
 <section id="hero">
   <div class="container">
     <p class="hero-label reveal">Einordnung</p>
-    <h1 class="hero-title reveal" style="transition-delay:.08s">KI arbeitet jetzt<br>eigenständig.<br>Stundenlang. Auf ein Ziel.</h1>
+    <h1 class="hero-title reveal" style="transition-delay:.08s">Das nächste Level<br>der KI ist erreicht.</h1>
     <p class="hero-sub reveal" style="transition-delay:.16s">Seit Oktober 2025 hat sich grundlegend verändert, was mit KI möglich ist. Ein kurzer Überblick — bevor wir live anschauen, was das in der Praxis bedeutet.</p>
     <div class="divider reveal" style="transition-delay:.22s"></div>
   </div>
@@ -435,6 +440,19 @@
   const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.06,rootMargin:'0px 0px -20px 0px'});
   els.forEach(el=>obs.observe(el));
   window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',window.scrollY>40),{passive:true});
+
+  document.querySelectorAll('.img-grid img').forEach(img=>{
+    img.addEventListener('click',()=>{
+      const ov=document.createElement('div');
+      ov.id='lb-overlay';
+      const pic=document.createElement('img');
+      pic.src=img.src;pic.alt=img.alt;
+      ov.appendChild(pic);
+      ov.addEventListener('click',()=>ov.remove());
+      document.addEventListener('keydown',function esc(e){if(e.key==='Escape'){ov.remove();document.removeEventListener('keydown',esc)}});
+      document.body.appendChild(ov);
+    });
+  });
 </script>
 </body>
 </html>
