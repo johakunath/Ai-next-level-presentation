@@ -664,6 +664,7 @@ function setupNav(){
   sections.forEach(s=>io.observe(s));
 }
 function init(){
+  el('objSwitch').innerHTML=PRESETS.map((p,i)=>`<option value="${i}">${p.city}</option>`).join('');
   el('objSwitch').addEventListener('change',e=>selectPreset(parseInt(e.target.value)));
   el('presets').innerHTML=PRESETS.map((p,i)=>{const b=BUILDINGS[p.bIdx];return `<button class="pset" onclick="selectPreset(${i})"><div class="ptop"><span class="pcity">${p.city}</span><span class="ptone ${p.tone}">${p.tone==='go'?'Chance':p.tone==='qual'?'Prüfen':'Risiko'}</span></div><div class="pchar">${p.char}</div><div class="pfacts"><span class="pf">${b.WE} WE</span><span class="pf">${fmtNum(b.Flaeche)} m²</span><span class="pf">Paket ${packageForKW(estimatePower(b).kW)}</span><span class="pf">${b.Energietraeger}</span></div></button>`;}).join('');
   el('roadGrid').innerHTML=ROADMAP.map(r=>`<div class="rcard"><span class="konzept">Konzept</span><div class="ic">${r.ic}</div><h3>${r.t}</h3><p>${r.d}</p></div>`).join('');
