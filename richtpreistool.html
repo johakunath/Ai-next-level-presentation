@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Caldora · Richtpreisangebots-Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3f4f6;--surface:#ffffff;--ink:#172033;--ink-soft:#566175;--ink-faint:#8b94a6;
+    --line:#e7e9ef;--line-2:#d7dae3;
+    --side:#141a26;--side-2:#1c2433;--side-ink:#a3adbf;--side-faint:#67718a;--side-active:#222c40;
+    --em:#0f9269;--em-deep:#0b7050;--em-bg:#e6f3ee;
+    --clay:#bd5a32;--clay-deep:#9d4a28;--clay-bg:#faefe8;
+    --go:#15924f;--go-bg:#e8f4ec;--go-bd:#c1e2cc;
+    --qual:#bd821c;--qual-bg:#f9f0da;--qual-bd:#ecdcb1;
+    --no:#c93b32;--no-bg:#faeae7;--no-bd:#efccc6;
+    --shadow:0 1px 2px rgba(23,32,51,.04),0 6px 20px -14px rgba(23,32,51,.2);
+    --shadow-lg:0 4px 8px rgba(23,32,51,.05),0 22px 56px -30px rgba(23,32,51,.3);--r:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:15.5px;letter-spacing:-.05px}
+  .mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:0}
+  .shell{display:grid;grid-template-columns:244px 1fr;min-height:100vh}
+  @media(max-width:900px){.shell{grid-template-columns:1fr}}
+  .side{background:var(--side);color:var(--side-ink);padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
+  @media(max-width:900px){.side{position:static;height:auto}}
+  .side .logo{display:flex;align-items:center;gap:11px;padding:4px 8px 18px}
+  .side .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(150deg,#0f9269,#13b07e);display:grid;place-items:center;flex-shrink:0;box-shadow:0 5px 14px -4px rgba(15,146,105,.5)}
+  .side .logo .nm{font-size:19px;font-weight:800;letter-spacing:-.5px;color:#fff}
+  .side .logo .nm i{color:#2fd39c;font-style:normal}
+  .side .sct{font-size:10.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--side-faint);padding:15px 10px 6px}
+  .nav{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14.5px;font-weight:600;color:var(--side-ink);transition:.14s;border:none;background:none;width:100%;text-align:left;font-family:inherit;position:relative}
+  .nav:hover{background:var(--side-2);color:#fff}
+  .nav.active{background:var(--side-active);color:#fff}
+  .nav.active::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--em);border-radius:0 3px 3px 0}
+  .nav .stp{width:23px;height:23px;border-radius:7px;background:#29324699;color:var(--side-ink);display:grid;place-items:center;font-size:11.5px;font-weight:700;flex-shrink:0}
+  .nav.active .stp{background:var(--em);color:#fff}
+  .nav .ic{width:18px;display:grid;place-items:center;flex-shrink:0;font-size:14px}
+  .side .spacer{flex:1}
+  .side .foot{padding:12px 10px 4px;border-top:1px solid #283044;margin-top:8px}
+  .side .demopill{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#ffd9c2;background:rgba(189,90,50,.18);border:1px solid rgba(189,90,50,.38);padding:5px 10px;border-radius:8px;display:inline-block}
+  .side .foot p{font-size:11px;color:var(--side-faint);margin-top:9px;line-height:1.5}
+  .main{min-width:0;display:flex;flex-direction:column}
+  .topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:13px 30px;display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:20}
+  .topbar .search{flex:1;max-width:380px;display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 13px;color:var(--ink-faint);font-size:14px}
+  .topbar .obj-switch{display:flex;align-items:center;gap:10px;margin-left:auto}
+  .topbar .obj-switch .lab{font-size:12.5px;color:var(--ink-faint);font-weight:600}
+  .topbar select{padding:8px 30px 8px 12px;border:1px solid var(--line-2);border-radius:9px;background:#fff;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink);appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23566175' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+  .topbar .user{display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+  .topbar .ava{width:31px;height:31px;border-radius:9px;background:var(--em-bg);color:var(--em-deep);display:grid;place-items:center;font-weight:700;font-size:12.5px}
+  .content{padding:24px 30px 64px;max-width:1500px;width:100%}
+  .page-h{margin-bottom:20px}
+  .page-h h1{font-size:27px;font-weight:800;letter-spacing:-.7px}
+  .page-h p{font-size:14.5px;color:var(--ink-soft);margin-top:3px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:24px}
+  @media(max-width:1150px){.kpis{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.kpis{grid-template-columns:1fr}}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:11px;padding:16px 18px;box-shadow:var(--shadow)}
+  .kpi .top{display:flex;justify-content:space-between;align-items:center}
+  .kpi .lab{font-size:13px;font-weight:700;color:var(--ink-soft)}
+  .kpi .ic{opacity:.85;font-size:15px}
+  .kpi .val{font-size:31px;font-weight:800;letter-spacing:-1px;margin-top:7px;line-height:1}
+  .kpi .val.sm{font-size:19px;letter-spacing:-.3px}
+  .kpi .hint{font-size:12px;color:var(--ink-faint);margin-top:6px}
+  .kpi.k-em{border-left-color:var(--em)}.kpi.k-go{border-left-color:var(--go)}.kpi.k-qual{border-left-color:var(--qual)}.kpi.k-no{border-left-color:var(--no)}
+  .cols{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:22px;align-items:start}
+  @media(max-width:1100px){.cols{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px;margin-bottom:22px}
+  .eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;color:var(--ink-faint);display:flex;align-items:center;gap:9px;margin-bottom:5px}
+  .eyebrow .ix{width:23px;height:23px;border-radius:7px;background:var(--em-bg);color:var(--em-deep);display:grid;place-items:center;font-size:11.5px;font-weight:800}
+  .card h2{font-size:19px;font-weight:700;letter-spacing:-.3px}
+  .card .lead{font-size:13.5px;color:var(--ink-soft);margin:5px 0 17px}
+  /* demo data-source wrapper */
+  .demosrc{border:1.5px dashed var(--line-2);border-radius:12px;background:repeating-linear-gradient(45deg,#fbfbfc,#fbfbfc 10px,#f6f7f9 10px,#f6f7f9 20px);padding:14px 15px;margin-bottom:16px}
+  .demosrc .dh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .demosrc .dh .t{font-size:12px;font-weight:700;color:var(--ink-soft);display:inline-flex;align-items:center;gap:8px}
+  .demosrc .dh .t .rib{font-size:9.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff;background:var(--clay);padding:3px 8px;border-radius:6px}
+  .demosrc .dh .note{font-size:11.5px;color:var(--ink-faint)}
+  .ghostbtn{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-faint);background:#fff;border:1px solid var(--line-2);border-radius:8px;padding:7px 12px;display:inline-flex;align-items:center;gap:7px;cursor:not-allowed;opacity:.75}
+  .presets{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.presets{grid-template-columns:1fr}}
+  .pset{text-align:left;background:#fff;border:1.5px solid var(--line-2);border-radius:11px;padding:14px 15px;cursor:pointer;transition:.16s;font-family:inherit}
+  .pset:hover{border-color:var(--em);transform:translateY(-1px);box-shadow:var(--shadow)}
+  .pset.sel{border-color:var(--em);background:var(--em-bg);box-shadow:0 0 0 3px rgba(15,146,105,.12)}
+  .pset .ptop{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px}
+  .pset .pcity{font-size:15.5px;font-weight:700}
+  .pset .ptone{font-size:10.5px;font-weight:700;letter-spacing:.3px;padding:3px 9px;border-radius:6px;white-space:nowrap}
+  .ptone.go{background:var(--go-bg);color:var(--go)}.ptone.qual{background:var(--qual-bg);color:var(--qual)}.ptone.no{background:var(--no-bg);color:var(--no)}
+  .pset .pchar{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px}
+  .pset .pfacts{display:flex;flex-wrap:wrap;gap:6px}
+  .pset .pf{font-size:11.5px;font-weight:600;color:var(--ink-soft);background:#fff;border:1px solid var(--line);padding:3px 8px;border-radius:6px}
+  .facts{width:100%;border-collapse:collapse;font-size:14px;margin-top:17px}
+  .facts td{padding:8px 0;border-bottom:1px solid var(--line)}
+  .facts tr:last-child td{border-bottom:none}
+  .facts td:first-child{color:var(--ink-soft);width:46%}
+  .facts td:last-child{text-align:right;font-weight:600}
+  .est{font-size:10.5px;font-weight:700;color:var(--qual);background:var(--qual-bg);padding:2px 7px;border-radius:5px;margin-left:7px}
+  label{display:block;font-size:12px;font-weight:700;color:var(--ink-soft);margin:0 0 5px}
+  label .hl{font-weight:600;font-size:11px;color:var(--em-deep);margin-left:6px}
+  select.f{width:100%;padding:10px 30px 10px 12px;border:1px solid var(--line-2);border-radius:9px;background:#fff;font-family:inherit;font-size:14px;color:var(--ink);appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23566175' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+  select.f:focus{outline:none;border-color:var(--em);box-shadow:0 0 0 3px rgba(15,146,105,.12)}
+  select.f option:disabled{color:#bbb}
+  .field{margin-bottom:15px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+  @media(max-width:520px){.row2,.row3{grid-template-columns:1fr}}
+  .subhd{font-size:12px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-faint);margin:6px 0 13px;padding-top:16px;border-top:1px solid var(--line)}
+  /* scenario segmented */
+  .scen{display:flex;gap:0;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;margin-bottom:10px}
+  .scen button{flex:1;font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 8px;border:none;background:#fff;color:var(--ink-soft);cursor:pointer;transition:.14s;border-right:1px solid var(--line-2)}
+  .scen button:last-child{border-right:none}
+  .scen button:hover{background:var(--bg)}
+  .scen button.on{background:var(--em);color:#fff}
+  .scen button.on.best{background:var(--go)} .scen button.on.worst{background:var(--no)}
+  .scendesc{font-size:12.5px;color:var(--ink-soft);background:var(--bg);border-radius:9px;padding:10px 13px;margin-bottom:16px}
+  .scendesc b{color:var(--ink)}
+  .ass-grid{display:grid;grid-template-columns:1fr 1fr;gap:19px 26px}
+  @media(max-width:520px){.ass-grid{grid-template-columns:1fr}}
+  .slider .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:8px}
+  .slider .nm{color:var(--ink-soft);font-weight:700;display:inline-flex;align-items:center;gap:7px}
+  .slider .vl{font-weight:700;color:var(--em-deep);font-family:'IBM Plex Mono',monospace;font-size:13.5px}
+  input[type=range]{width:100%;accent-color:var(--clay);cursor:pointer;height:5px}
+  .info{width:16px;height:16px;border-radius:50%;background:var(--line);color:var(--ink-soft);font-size:10.5px;font-weight:700;display:inline-grid;place-items:center;cursor:help;position:relative;font-family:inherit}
+  .info:hover{background:var(--em);color:#fff}
+  .info .tip{display:none;position:absolute;bottom:145%;left:50%;transform:translateX(-50%);width:248px;background:var(--ink);color:#f3f4f6;font-size:12px;font-weight:500;line-height:1.5;padding:10px 12px;border-radius:9px;z-index:40;box-shadow:var(--shadow-lg);text-align:left}
+  .info .tip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--ink)}
+  .info:hover .tip{display:block}
+  .ass-note{font-size:12px;color:var(--ink-faint);margin-top:17px;padding-top:13px;border-top:1px dashed var(--line-2)}
+  details.ass summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--em-deep);list-style:none;display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  details.ass summary::-webkit-details-marker{display:none}
+  details.ass summary .caret{transition:.2s}details.ass[open] summary .caret{transform:rotate(90deg)}
+  .reco{border-radius:11px;padding:16px 18px;margin-bottom:19px;border:1px solid;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .reco.go{background:var(--go-bg);border-color:var(--go-bd)}.reco.qual{background:var(--qual-bg);border-color:var(--qual-bd)}.reco.no{background:var(--no-bg);border-color:var(--no-bd)}
+  .reco .badge{font-size:14px;font-weight:700;padding:8px 14px;border-radius:9px;color:#fff;white-space:nowrap}
+  .reco.go .badge{background:var(--go)}.reco.qual .badge{background:var(--qual)}.reco.no .badge{background:var(--no)}
+  .reco .gate{flex:1;min-width:185px;font-size:14.5px;font-weight:700}
+  .reco .gate small{display:block;font-weight:500;font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+  .conf{font-size:12.5px;font-weight:700;color:var(--ink-soft);text-align:right}
+  .conf .dots{display:inline-flex;gap:3px;margin-left:7px;vertical-align:middle}
+  .conf .d{width:9px;height:9px;border-radius:50%;background:var(--line-2)}.conf .d.on{background:var(--em)}
+  .assess-grid{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+  .complete .item{margin-bottom:11px;font-size:13px;display:flex;justify-content:space-between;font-weight:600}
+  .complete .bar{height:7px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:5px}
+  .complete .bar>div{height:100%;border-radius:5px}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:23px;margin-top:19px}
+  @media(max-width:600px){.twocol{grid-template-columns:1fr}}
+  .lblsm{font-size:12.5px;font-weight:700;letter-spacing:.2px;margin-bottom:7px}
+  .risklist{list-style:none;font-size:13px}
+  .risklist li{padding:8px 0 8px 21px;border-bottom:1px solid var(--line);position:relative;color:var(--ink-soft)}
+  .risklist li:last-child{border-bottom:none}
+  .risklist li::before{content:"";position:absolute;left:1px;top:14px;width:8px;height:8px;border-radius:2px}
+  .risklist.tech li::before{background:var(--em)}.risklist.comm li::before{background:var(--clay)}
+  .risklist.miss li::before{background:var(--qual);border-radius:50%}.risklist.act li::before{background:var(--go);transform:rotate(45deg)}
+  .offer-col{position:sticky;top:86px}
+  @media(max-width:1100px){.offer-col{position:static}}
+  .offer{background:#fff;border:1px solid var(--line);border-top:4px solid var(--clay);border-radius:14px;box-shadow:var(--shadow-lg);overflow:hidden}
+  .offer-hd{padding:21px 23px 17px;border-bottom:1px solid var(--line);background:radial-gradient(440px 130px at 90% -30%,rgba(189,90,50,.08),transparent 60%)}
+  .offer-hd .ttl{font-size:11.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--clay-deep);font-weight:700}
+  .offer-hd h2{font-size:22px;font-weight:800;letter-spacing:-.4px;margin:4px 0 3px}
+  .offer-hd .for{font-size:13px;color:var(--ink-soft)}
+  .offer-bd{padding:19px 23px 6px}
+  .hero{background:var(--clay-bg);border:1px solid #f0d7c6;border-radius:12px;padding:17px 19px;margin-bottom:17px;text-align:center}
+  .hero .lab{font-size:11.5px;font-weight:700;color:var(--clay-deep);text-transform:uppercase;letter-spacing:.5px}
+  .hero .big{font-size:38px;font-weight:800;letter-spacing:-1.5px;margin:5px 0 2px}
+  .hero .big small{font-size:16px;font-weight:600;color:var(--ink-soft)}
+  .hero .sub{font-size:12.5px;color:var(--ink-soft)}
+  .lines{font-size:14px}
+  .line{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .line .k{color:var(--ink-soft)}.line .k small{display:block;font-size:11px;color:var(--ink-faint);margin-top:1px}
+  .line .v{font-weight:700;text-align:right;white-space:nowrap}
+  .line .v small{display:block;font-size:11px;color:var(--ink-faint);font-weight:500;margin-top:1px}
+  .incl{font-size:12.5px;color:var(--ink-soft);padding:13px 0 4px;line-height:1.9}
+  .incl b{color:var(--ink);font-weight:700}
+  .incl .pill{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:3px 9px;margin:3px 5px 3px 0;font-size:12px;font-weight:600}
+  .offer-note{font-size:12px;color:var(--clay-deep);background:var(--clay-bg);border:1px dashed #e7c4b0;border-radius:9px;padding:10px 13px;margin:10px 0 4px;font-weight:600}
+  .offer-ft{padding:15px 23px 21px}
+  .offer-disc{font-size:10.5px;color:var(--ink-faint);margin-top:13px;line-height:1.55}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;font-family:inherit;font-size:15px;font-weight:700;padding:14px 18px;border-radius:11px;cursor:pointer;border:1px solid transparent;transition:.15s}
+  .btn-primary{background:var(--clay);color:#fff;box-shadow:0 9px 20px -10px rgba(189,90,50,.6)}
+  .btn-primary:hover{background:var(--clay-deep)}
+  .road-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:14px;margin-top:6px}
+  .rcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 17px;position:relative}
+  .rcard .ic{font-size:20px;margin-bottom:9px}
+  .rcard h3{font-size:14.5px;font-weight:700;margin-bottom:4px}
+  .rcard p{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+  .konzept{position:absolute;top:14px;right:14px;font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--em-deep);background:var(--em-bg);border:1px solid #c3ead9;padding:3px 8px;border-radius:6px}
+  .compliance{background:#fff;border:1px dashed var(--line-2);border-radius:var(--r);padding:19px 24px;margin-top:4px}
+  .compliance ul{list-style:none;font-size:12.5px;color:var(--ink-soft);columns:2;column-gap:36px}
+  @media(max-width:600px){.compliance ul{columns:1}}
+  .compliance li{padding:5px 0 5px 20px;position:relative;break-inside:avoid}
+  .compliance li::before{content:"!";position:absolute;left:0;top:5px;width:14px;height:14px;font-size:10px;font-weight:700;color:#fff;background:var(--qual);border-radius:5px;display:grid;place-items:center}
+  .pagefoot{text-align:center;font-size:11.5px;color:var(--ink-faint);padding:22px 0 10px}
+  /* ===== COLORFUL PRINT (large fonts) ===== */
+  #printReport{display:none}
+  @media print{
+    @page{size:A4;margin:11mm 11mm}
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+    body{background:#fff}.no-print{display:none!important}.shell{display:block}
+    #printReport{display:block;color:#172033;font-size:14px;font-family:'Inter',sans-serif;line-height:1.45}
+    #printReport .phead{background:linear-gradient(115deg,#0f9269 0%,#13a878 45%,#bd5a32 115%);color:#fff;border-radius:14px;padding:22px 26px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end}
+    #printReport .phead .pbrand{font-size:14px;font-weight:800;letter-spacing:.5px;opacity:.95}
+    #printReport .phead h1{font-size:31px;font-weight:800;letter-spacing:-.6px;margin-top:5px}
+    #printReport .phead .pdate{font-size:13px;text-align:right;opacity:.95;line-height:1.55}
+    #printReport .pkpis{display:flex;gap:13px;margin-bottom:20px}
+    #printReport .pk{flex:1;border-radius:11px;padding:14px 16px;color:#fff}
+    #printReport .pk .l{font-size:11px;text-transform:uppercase;letter-spacing:.5px;opacity:.92;font-weight:700}
+    #printReport .pk .v{font-size:24px;font-weight:800;margin-top:5px;letter-spacing:-.5px}
+    #printReport .pk.a{background:#0f9269}#printReport .pk.b{background:#bd5a32}#printReport .pk.c{background:#3257a8}#printReport .pk.d{background:#4b3f8f}
+    #printReport .preco{border-radius:11px;padding:15px 18px;margin-bottom:18px;font-weight:700;font-size:17px;border:2px solid}
+    #printReport .preco.go{background:#e8f4ec;border-color:#15924f;color:#0c6b39}
+    #printReport .preco.qual{background:#f9f0da;border-color:#bd821c;color:#8a5f12}
+    #printReport .preco.no{background:#faeae7;border-color:#c93b32;color:#9a2c25}
+    #printReport .preco small{display:block;font-weight:500;font-size:13px;margin-top:4px;color:#566175}
+    #printReport section{margin-bottom:16px;break-inside:avoid}
+    #printReport h3{font-size:13.5px;text-transform:uppercase;letter-spacing:.6px;color:#fff;background:#172033;border-radius:7px;padding:7px 13px;margin-bottom:10px;display:inline-block}
+    #printReport h3.clay{background:#bd5a32}#printReport h3.em{background:#0f9269}
+    #printReport table{width:100%;border-collapse:collapse;font-size:13.5px}
+    #printReport td{padding:7px 10px;border-bottom:1px solid #eef0f4}
+    #printReport tr:nth-child(even) td{background:#f7f8fa}
+    #printReport td:last-child{text-align:right;font-weight:700}
+    #printReport .pbar{display:flex;height:28px;border-radius:7px;overflow:hidden;margin:8px 0 6px;border:1px solid #e7e9ef}
+    #printReport .pbar div{height:100%}
+    #printReport .pleg{font-size:11.5px;color:#566175;display:flex;flex-wrap:wrap;gap:13px;margin-bottom:5px}
+    #printReport .pleg span{display:inline-flex;align-items:center;gap:5px}
+    #printReport .pleg i{width:11px;height:11px;border-radius:2px;display:inline-block}
+    #printReport ul{padding-left:19px;font-size:13.5px}#printReport li{margin-bottom:5px}
+    #printReport .cols2{display:flex;gap:22px}#printReport .cols2>div{flex:1}
+    #printReport .pfoot{margin-top:18px;padding:12px 15px;border-radius:9px;background:#f3f4f6;font-size:11px;color:#8b94a6;text-align:center}
+  }
+</style>
+</head>
+<body>
+<div class="shell no-print">
+  <aside class="side">
+    <div class="logo"><div class="mark"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 3c2.2 3 4.5 5 4.5 8.2A4.5 4.5 0 0 1 12 16a4.5 4.5 0 0 1-4.5-4.8C7.5 8 9.8 6 12 3Z" fill="#fff"/></svg></div><span class="nm">Caldora<i>.</i></span></div>
+    <div class="sct">Ablauf</div>
+    <button class="nav active" data-target="sec-building"><span class="stp">1</span>Gebäude wählen</button>
+    <button class="nav" data-target="sec-technik"><span class="stp">2</span>Technik konfigurieren</button>
+    <button class="nav" data-target="sec-annahmen"><span class="stp">3</span>Annahmen justieren</button>
+    <button class="nav" data-target="sec-angebot"><span class="stp">4</span>Angebot &amp; PDF</button>
+    <div class="sct">Intelligence</div>
+    <button class="nav" data-target="sec-intern"><span class="ic">★</span>Vertriebsbewertung</button>
+    <button class="nav" data-target="sec-roadmap"><span class="ic">→</span>Potenzielle Erweiterungen</button>
+    <div class="spacer"></div>
+    <div class="foot"><span class="demopill">Demo-Prototyp</span><p>White-Label · synthetische Daten · keine verbindliche Aussage</p></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="search"><svg width="16" height="16" viewBox="0 0 17 17" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="#8b94a6" stroke-width="1.6"/><path d="M11.5 11.5L15 15" stroke="#8b94a6" stroke-width="1.6" stroke-linecap="round"/></svg>Objekt oder Kennzahl suchen…</div>
+      <div class="obj-switch"><span class="lab">Aktives Objekt</span><select id="objSwitch"></select></div>
+      <div class="user"><span class="ava">PD</span>Projektentwicklung</div>
+    </div>
+    <div class="content">
+      <div class="page-h"><h1>Richtpreisangebot</h1><p>Vom Gebäudedatensatz zur belastbaren Erstindikation für Contracting-Chancen.</p></div>
+      <div class="kpis">
+        <div class="kpi k-em"><div class="top"><span class="lab">Datenqualität</span><span class="ic">▦</span></div><div class="val mono" id="kDQ">–</div><div class="hint" id="kDQh"></div></div>
+        <div class="kpi k-go" id="kpRec"><div class="top"><span class="lab">Empfehlung</span><span class="ic">✓</span></div><div class="val sm" id="kRec">–</div><div class="hint" id="kRech"></div></div>
+        <div class="kpi k-qual"><div class="top"><span class="lab">Wärmekosten</span><span class="ic">€</span></div><div class="val mono" id="kSqm" style="font-size:25px">–</div><div class="hint">€/m² · Monat (all-in)</div></div>
+        <div class="kpi k-no"><div class="top"><span class="lab">Wärmepreis</span><span class="ic">⚡</span></div><div class="val mono" id="kPrice" style="font-size:25px">–</div><div class="hint">Arbeitspreis, ct/kWh</div></div>
+      </div>
+      <div class="cols">
+        <div>
+          <div class="card" id="sec-building">
+            <div class="eyebrow"><span class="ix">1</span>Eingabe · Gebäude</div>
+            <h2>Gebäude auswählen</h2>
+            <p class="lead">Das Systempaket wird automatisch aus Wärmebedarf und Heizlast abgeleitet.</p>
+            <div class="demosrc">
+              <div class="dh">
+                <span class="t"><span class="rib">Demo</span>Demo-Datenquelle</span>
+                <button class="ghostbtn" disabled title="Im Produktivsystem aktiv">⤓ Aus CRM / ERP importieren</button>
+              </div>
+              <div class="presets" id="presets"></div>
+              <div class="dh" style="margin:11px 0 0"><span class="note">In der Praxis kommen die Gebäudedaten aus CRM/ERP oder werden manuell erfasst. Diese Beispielobjekte dienen ausschließlich der Demonstration.</span></div>
+            </div>
+            <table class="facts" id="facts"></table>
+          </div>
+
+          <div class="card" id="sec-technik">
+            <div class="eyebrow"><span class="ix">2</span>Eingabe · Technik &amp; Kommerz</div>
+            <h2>Konfiguration</h2>
+            <p class="lead">Technische Auslegung und kommerzielle Ausgestaltung. Abrechnung, Wartung, Betriebsführung und Monitoring sind im Contracting stets enthalten.</p>
+            <div class="subhd" style="border-top:none;padding-top:0">Technische Auslegung</div>
+            <div class="row2">
+              <div class="field"><label>Systempaket <span class="hl" id="pkgHint">auto</span></label><select class="f" id="cfgPackage"><option value="S">S – bis ca. 50 kW</option><option value="M">M – ca. 50–100 kW</option><option value="L">L – ca. 100–200 kW</option><option value="XL">XL – Sonderfall &gt; 200 kW</option></select></div>
+              <div class="field"><label>Wärmeerzeuger <span class="hl" id="genKw"></span></label><select class="f" id="cfgGen"><option value="luft">Luft-Wasser-Wärmepumpe</option><option value="sole">Sole-Wasser-Wärmepumpe</option><option value="hybrid">Hybrid Wärmepumpe + Gas</option><option value="gas">Gas-Brennwert Übergangslösung</option><option value="spitze">Wärmepumpe + Spitzenlastkessel</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Warmwasser</label><select class="f" id="cfgDHW"><option value="zentral">zentral integriert</option><option value="separat">separat</option><option value="unklar">unklar</option></select></div>
+              <div class="field"><label>Hydraulik</label><select class="f" id="cfgHyd"><option value="standard">Standard-Hydraulikpaket</option><option value="komplex">komplexe Bestandsintegration</option><option value="puffer">Pufferspeicher erweitert</option><option value="strang">Strangsanierung erforderlich</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Spitzenlastabdeckung</label><select class="f" id="cfgPeak"><option value="keine">vollelektrisch, keine</option><option value="elektro">Elektro-Heizstab</option><option value="gas">Gas-Spitzenlastkessel</option></select></div>
+              <div class="field"><label>Pufferspeicher <span class="hl" id="bufL"></span></label><select class="f" id="cfgBuf"><option value="standard">Standard</option><option value="gross">groß dimensioniert</option><option value="xxl">XXL / Lastmanagement</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Schallschutz</label><select class="f" id="cfgNoise"><option value="standard">Standard</option><option value="erhoeht">erhöhte Anforderung</option><option value="einhausung">Einhausung / Schallhaube</option></select></div>
+              <div class="field"><label>Erschließung &amp; Leitungswege</label><select class="f" id="cfgCx"><option value="niedrig">Technikraum vorhanden, kurze Wege</option><option value="mittel">teilweise Anpassung nötig</option><option value="hoch">beengt, weite Leitungswege</option></select></div>
+            </div>
+            <div class="subhd">Kommerzielle Ausgestaltung</div>
+            <div class="row2">
+              <div class="field"><label>Vertragsmodell</label><select class="f" id="cfgModel"><option value="voll">Vollcontracting (Anlagencontracting)</option><option value="waerme">Wärmelieferung (Energieliefercontracting)</option><option value="teil">Teilcontracting</option></select></div>
+              <div class="field"><label>Wartung &amp; Betriebsführung</label><select class="f" id="cfgSla"><option value="basis">Basis (enthalten)</option><option value="komfort">Komfort (enthalten)</option><option value="premium">Premium 24/7 (enthalten)</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Digitale Betriebsführung</label><select class="f" id="cfgMon"><option value="basic">Monitoring Basic</option><option value="opt">Monitoring + Optimierung</option><option value="stoer">Monitoring + Störungsmanagement</option></select></div>
+              <div class="field"><label>Preisgleitklausel</label><select class="f" id="cfgEsc"><option value="indexiert">indexiert (Preisgleitung)</option><option value="fest">Festpreis</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label>Vertragslaufzeit</label><select class="f" id="cfgTerm"><option value="10">10 Jahre</option><option value="15">15 Jahre</option><option value="20">20 Jahre</option></select></div>
+              <div class="field"><label>Förderung</label><select class="f" id="cfgSub" disabled><option value="beg">BEG 30 % (fix)</option></select></div>
+            </div>
+          </div>
+
+          <div class="card" id="sec-annahmen">
+            <div class="eyebrow"><span class="ix">3</span>Eingabe · Annahmen &amp; Szenario</div>
+            <h2>Szenario &amp; Kalkulations-Annahmen</h2>
+            <p class="lead">Szenario setzt Kosten-, Ertrags- und Risikoannahmen. Einzelne Parameter bleiben darunter feinjustierbar. Symbol für Erklärung.</p>
+            <div class="scen" id="scenBar">
+              <button data-sc="best" class="best">Best Case</button>
+              <button data-sc="base" class="on">Basisfall</button>
+              <button data-sc="worst" class="worst">Worst Case</button>
+            </div>
+            <div class="scendesc" id="scenDesc"></div>
+            <details class="ass" open>
+              <summary><span class="caret">▸</span>Annahmen ein-/ausblenden</summary>
+              <div class="ass-grid" id="assGrid"></div>
+              <div class="ass-note">Förderung (BEG 30 %), Energiepreis und Ziel-Rendite (6,5 % real) sind als Festwerte hinterlegt. Keine realen Lieferanten- oder Förderkonditionen.</div>
+            </details>
+          </div>
+
+          <div class="card" id="sec-intern">
+            <div class="eyebrow"><span class="ix">★</span>Intern · Vertriebsbewertung</div>
+            <h2>Interne Einschätzung</h2>
+            <p class="lead">Nicht Teil des Kundenangebots. Bewertet die Chance für Vertrieb und Projektentwicklung.</p>
+            <div class="reco" id="reco"><span class="badge" id="recoBadge">–</span><div class="gate"><span id="gateMain">–</span><small id="gateSub"></small></div><div class="conf">Konfidenz <span id="confLabel">–</span><span class="dots"><span class="d" id="cd1"></span><span class="d" id="cd2"></span><span class="d" id="cd3"></span></span></div></div>
+            <div class="assess-grid"><svg width="96" height="96" viewBox="0 0 96 96" id="gauge"></svg><div class="complete" id="completeList"></div></div>
+            <div class="twocol"><div><div class="lblsm" style="color:var(--clay)">Kommerzielle Risiken</div><ul class="risklist comm" id="riskComm"></ul></div><div><div class="lblsm" style="color:var(--em-deep)">Technische Risiken</div><ul class="risklist tech" id="riskTech"></ul></div></div>
+            <div class="twocol"><div><div class="lblsm" style="color:var(--qual)">Fehlende Daten</div><ul class="risklist miss" id="missList"></ul></div><div><div class="lblsm" style="color:var(--go)">Nächste Schritte</div><ul class="risklist act" id="actList"></ul></div></div>
+          </div>
+        </div>
+        <div class="offer-col" id="sec-angebot">
+          <div class="offer">
+            <div class="offer-hd"><div class="ttl">Richtpreisangebot · Vorschau</div><h2 id="ofObj">–</h2><div class="for" id="ofFor"></div></div>
+            <div class="offer-bd">
+              <div class="hero"><div class="lab">Geschätzte Wärmekosten</div><div class="big mono"><span id="ofSqm">–</span> <small>/ m² · Monat</small></div><div class="sub">warme Betriebskosten, all-in · ohne Eigeninvest</div></div>
+              <div class="lines" id="ofLines"></div>
+              <div class="incl" id="ofIncl"></div>
+              <div class="offer-note" id="ofNote"></div>
+            </div>
+            <div class="offer-ft"><button class="btn btn-primary" onclick="exportPDF()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v9m0 0L5 7m3 3l3-3M2 11v3h12v-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF-Erstindikation exportieren</button><div class="offer-disc">Demo-Prototyp. Keine verbindliche technische, wirtschaftliche oder rechtliche Aussage. Richtpreise beruhen auf synthetischen Annahmen und ersetzen keine Fachplanung.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" id="sec-roadmap" style="margin-top:6px">
+        <div class="eyebrow"><span class="ix">→</span>Ausblick</div><h2>Potenzielle Erweiterungen</h2>
+        <p class="lead">Konzeptuelle Ausbaustufen. Zielbild eines agentischen, commercial-fähigen Tools.</p>
+        <div class="road-grid" id="roadGrid"></div>
+      </div>
+      <div class="compliance"><div class="eyebrow" style="margin-bottom:11px"><span class="ix">!</span>Hinweise &amp; Haftungsausschluss</div>
+        <ul><li>Nur synthetische Demo-Daten verwenden</li><li>Keine vertraulichen Kunden-, Preis- oder Lieferantendaten eingeben</li><li>Richtpreise sind nicht verbindlich</li><li>Technische Auslegung muss durch Fachplanung geprüft werden</li><li>Förderlogik ist stark vereinfacht</li><li>Alle Berechnungen beruhen auf frei gewählten Demo-Annahmen</li></ul>
+      </div>
+      <div class="pagefoot">Caldora ist ein fiktiver White-Label-Demo-Name · kein realer Marken- oder Unternehmensbezug</div>
+    </div>
+  </div>
+</div>
+<div id="printReport"></div>
+<script>
+/* ============ ASSUMPTIONS ============ */
+const BASE_EUR={S:1600,M:1450,L:1300,XL:1500};
+const ASSUMPTIONS={
+  eurPerKW:{S:1600,M:1450,L:1300,XL:1500},
+  genFactor:{luft:1.00,sole:1.35,hybrid:0.90,gas:0.50,spitze:1.10},
+  scop:{luft:3.0,sole:4.2,hybrid:2.8,gas:0.95,spitze:3.0},
+  cxMult:{niedrig:1.00,mittel:1.15,hoch:1.35},
+  dhwMult:{zentral:1.12,separat:1.06,unklar:1.08},
+  hydAdd:{standard:0.00,komplex:0.15,puffer:0.06,strang:0.25},
+  peakAdd:{keine:0,elektro:0.02,gas:0.05},
+  bufAdd:{standard:0,gross:0.04,xxl:0.08},
+  bufLpkW:{standard:22,gross:38,xxl:58},
+  noiseAdd:{standard:0,erhoeht:0.03,einhausung:0.07},
+  monPct:{basic:0.015,opt:0.030,stoer:0.040},
+  slaOpex:{basis:0.030,komfort:0.038,premium:0.048},
+  billingOpex:0.004,                 // Abrechnung/Submetering always included
+  meterAdd:0.025,                    // Submetering je WE always included
+  subsidy:0.30,                      // BEG 30% fixed
+  targetReturn:0.065, elecPrice:0.26, gasPrice:0.10,
+  vbh:1800, specDemand:{unsaniert:150,teilsaniert:110,saniert:70,unbekannt:130},
+  fixedShare:0.55,
+  planningPct:0.12, riskPct:0.08, costIndex:0.025, revIndex:0.020, term:15
+};
+const SCEN={
+  best:{eurMult:0.92,costIndex:0.015,revIndex:0.030,riskPct:0.05,planningPct:0.10,
+        desc:'<b>Best Case:</b> günstige Beschaffung (−8 % €/kW), starke Preisgleitung (3,0 %), niedrige Kostensteigerung (1,5 %), geringes Risiko (5 %).'},
+  base:{eurMult:1.00,costIndex:0.025,revIndex:0.020,riskPct:0.08,planningPct:0.12,
+        desc:'<b>Basisfall:</b> realistische Mittelwerte für Kosten (2,5 %), Ertragsindexierung (2,0 %), Planung (12 %) und Risiko (8 %).'},
+  worst:{eurMult:1.12,costIndex:0.045,revIndex:0.010,riskPct:0.14,planningPct:0.16,
+        desc:'<b>Worst Case:</b> teure Beschaffung (+12 % €/kW), hohe Kostensteigerung (4,5 %), schwache Indexierung (1,0 %), hoher Risikopuffer (14 %).'}
+};
+let curScen='base';
+const SLIDERS=[
+  {key:'eurPerKW_M',label:'€/kW WP-Paket (M)',min:1100,max:2200,step:50,fmt:v=>fmtEUR(v),tip:'Spezifische Investitionskosten der Wärmepumpenanlage pro kW Heizleistung — wichtigster CAPEX-Treiber. Skaliert alle Paketgrößen proportional.',get:()=>ASSUMPTIONS.eurPerKW.M,set:v=>{const d=v/ASSUMPTIONS.eurPerKW.M;for(const k in ASSUMPTIONS.eurPerKW)ASSUMPTIONS.eurPerKW[k]=Math.round(ASSUMPTIONS.eurPerKW[k]*d)}},
+  {key:'planningPct',label:'Planungszuschlag',min:0.05,max:0.25,step:0.01,fmt:v=>pct(v),tip:'Aufschlag für Planung und Projektentwicklung als Anteil der Anlagenkosten.',get:()=>ASSUMPTIONS.planningPct,set:v=>ASSUMPTIONS.planningPct=v},
+  {key:'riskPct',label:'Risikopuffer',min:0,max:0.20,step:0.01,fmt:v=>pct(v),tip:'Sicherheitsaufschlag für Bau-, Bestands- und Prognoserisiken auf die CAPEX.',get:()=>ASSUMPTIONS.riskPct,set:v=>ASSUMPTIONS.riskPct=v},
+  {key:'costIndex',label:'Kostensteigerung p.a.',min:0,max:0.06,step:0.005,fmt:v=>pct(v),tip:'Erwartete jährliche Steigerung von Betriebs- und Energiekosten über die Laufzeit. Höher → höherer levelierter Anfangspreis nötig.',get:()=>ASSUMPTIONS.costIndex,set:v=>ASSUMPTIONS.costIndex=v},
+  {key:'revIndex',label:'Ertragsindexierung p.a.',min:0,max:0.06,step:0.005,fmt:v=>pct(v),tip:'Jährliche Preisgleitung der Wärmeerlöse. Gleicht Kostensteigerung aus; höher → niedrigerer levelierter Anfangspreis möglich.',get:()=>ASSUMPTIONS.revIndex,set:v=>ASSUMPTIONS.revIndex=v},
+];
+
+/* ============ BUILDINGS ============ */
+const BUILDINGS=[
+  {Objektname:'MFH Demo Berlin-Nord',Region:'Berlin',Gebaeudetyp:'MFH Bestand',WE:12,Flaeche:920,Baujahr:1998,Sanierung:'teilsaniert',Energietraeger:'Gas',Kesselalter:14,Waermebedarf:101000,Leistung:null,WW:'zentral',VLT:'55-65°C',AufstellInnen:'Keller',AufstellAussen:'Hof',NetzUnbekannt:false,Kunde:'Wohnungsbau Demo eG',Vertrieb:'Erstkontakt'},
+  {Objektname:'MFH Demo Potsdam-West',Region:'Potsdam',Gebaeudetyp:'MFH Bestand',WE:18,Flaeche:1450,Baujahr:1985,Sanierung:'unsaniert',Energietraeger:'Öl',Kesselalter:22,Waermebedarf:188000,Leistung:120,WW:'separat',VLT:'>65°C',AufstellInnen:'Keller',AufstellAussen:'unklar',NetzUnbekannt:true,Kunde:'Privatportfolio Demo',Vertrieb:'Erstkontakt'},
+  {Objektname:'MFH Demo Leipzig-Süd',Region:'Leipzig',Gebaeudetyp:'MFH Bestand',WE:8,Flaeche:640,Baujahr:2005,Sanierung:'saniert',Energietraeger:'Gas',Kesselalter:9,Waermebedarf:58000,Leistung:42,WW:'zentral',VLT:'45-55°C',AufstellInnen:'Keller',AufstellAussen:'Außenfläche',NetzUnbekannt:false,Kunde:'Genossenschaft Demo',Vertrieb:'Qualifiziert'},
+  {Objektname:'MFH Demo Dresden-Ost',Region:'Dresden',Gebaeudetyp:'MFH Bestand',WE:24,Flaeche:2100,Baujahr:1992,Sanierung:'teilsaniert',Energietraeger:'Fernwärme',Kesselalter:null,Waermebedarf:231000,Leistung:null,WW:'unklar',VLT:'unbekannt',AufstellInnen:'unklar',AufstellAussen:'Hof',NetzUnbekannt:true,Kunde:'Asset Manager Demo',Vertrieb:'Erstkontakt'},
+  {Objektname:'MFH Demo Hamburg-Mitte',Region:'Hamburg',Gebaeudetyp:'MFH Bestand',WE:36,Flaeche:3200,Baujahr:1979,Sanierung:'teilsaniert',Energietraeger:'Gas',Kesselalter:17,Waermebedarf:352000,Leistung:240,WW:'zentral',VLT:'55-65°C',AufstellInnen:'Keller',AufstellAussen:'Dach',NetzUnbekannt:false,Kunde:'Norddeutsche Wohnbau GmbH',Vertrieb:'Qualifiziert'},
+];
+const PRESETS=[
+  {bIdx:2,city:'Leipzig-Süd',char:'Guter Standardfall · saniert, niedrige VLT',tone:'go',cfg:{cfgGen:'luft',cfgDHW:'zentral',cfgHyd:'standard',cfgPeak:'keine',cfgBuf:'standard',cfgNoise:'standard',cfgCx:'niedrig',cfgModel:'voll',cfgSla:'komfort',cfgMon:'opt',cfgEsc:'indexiert',cfgTerm:'15'}},
+  {bIdx:0,city:'Berlin-Nord',char:'Wirtschaftlich attraktiv · solide Datenlage',tone:'go',cfg:{cfgGen:'luft',cfgDHW:'zentral',cfgHyd:'standard',cfgPeak:'elektro',cfgBuf:'standard',cfgNoise:'standard',cfgCx:'mittel',cfgModel:'voll',cfgSla:'komfort',cfgMon:'opt',cfgEsc:'indexiert',cfgTerm:'15'}},
+  {bIdx:4,city:'Hamburg-Mitte',char:'Großes Sonderprojekt · komplexer Standort',tone:'qual',cfg:{cfgGen:'sole',cfgDHW:'zentral',cfgHyd:'puffer',cfgPeak:'gas',cfgBuf:'xxl',cfgNoise:'einhausung',cfgCx:'hoch',cfgModel:'voll',cfgSla:'premium',cfgMon:'stoer',cfgEsc:'indexiert',cfgTerm:'20'}},
+  {bIdx:1,city:'Potsdam-West',char:'Technisch kritisch · hohe VLT, Öl, Netz unklar',tone:'no',cfg:{cfgGen:'spitze',cfgDHW:'separat',cfgHyd:'strang',cfgPeak:'elektro',cfgBuf:'gross',cfgNoise:'erhoeht',cfgCx:'hoch',cfgModel:'voll',cfgSla:'komfort',cfgMon:'stoer',cfgEsc:'fest',cfgTerm:'20'}},
+  {bIdx:3,city:'Dresden-Ost',char:'Datenlage schwach · Fernwärme-Umstellung',tone:'no',cfg:{cfgGen:'luft',cfgDHW:'unklar',cfgHyd:'komplex',cfgPeak:'keine',cfgBuf:'standard',cfgNoise:'standard',cfgCx:'hoch',cfgModel:'waerme',cfgSla:'basis',cfgMon:'basic',cfgEsc:'indexiert',cfgTerm:'15'}},
+];
+const ROADMAP=[
+  {ic:'📑',t:'Ausschreibungsanalyse',d:'Anforderungen aus Leistungsverzeichnissen automatisch extrahieren.'},
+  {ic:'🔄',t:'CRM-Sync',d:'Opportunity-Daten automatisch aus dem CRM übernehmen.'},
+  {ic:'🏦',t:'Fördermittel-Agent',d:'BEG/BAFA/KfW-Vorprüfung und Förderquote schätzen.'},
+  {ic:'🛰️',t:'Geodaten-Check',d:'Aufstellfläche, Lärm, Luftbild, Netzanschluss prüfen.'},
+  {ic:'💶',t:'Lieferantenpreis-Sync',d:'Aktuelle Paketpreise aus Rahmenverträgen ziehen.'},
+  {ic:'🔧',t:'Engineering Review Agent',d:'Technische Annahmen automatisch plausibilisieren.'},
+  {ic:'📊',t:'Angebotspräsentations-Generator',d:'Management- oder Kundenfolien automatisch erstellen.'},
+  {ic:'🛣️',t:'Sanierungsfahrplan-Verknüpfung',d:'CO₂-Pfad und Maßnahmenlogik ergänzen.'},
+  {ic:'🏘️',t:'Portfolio-Modus',d:'Mehrere Gebäude priorisieren und vergleichen.'},
+  {ic:'📱',t:'Site-Visit-App',d:'Mobile Datenerfassung für Vertriebstechniker.'},
+];
+
+/* ============ FORMATTERS ============ */
+const nfEUR=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+const nfEUR2=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+const nf1=new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf2=new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const nfNum=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
+const fmtEUR=v=>nfEUR.format(v),fmtEURk=v=>nfEUR2.format(v),fmtNum=v=>nfNum.format(v);
+const pct=v=>nfNum.format(v*100)+' %', fmtCt=e=>nf1.format(e*100)+' ct/kWh', fmtSqm=v=>nf2.format(v)+' €';
+
+/* ============ ENGINE ============ */
+function estimatePower(b){if(b.Leistung)return{kW:b.Leistung,est:false};if(b.Waermebedarf)return{kW:Math.round(b.Waermebedarf/ASSUMPTIONS.vbh),est:true};return{kW:Math.round(b.Flaeche*0.05),est:true};}
+function annualHeat(b){if(b.Waermebedarf)return{kWh:b.Waermebedarf,est:false};const sd=ASSUMPTIONS.specDemand[b.Sanierung]||ASSUMPTIONS.specDemand.unbekannt;return{kWh:Math.round(b.Flaeche*sd),est:true};}
+/* package derived from installed power (which follows from kWh and kWh/m²) */
+function packageForKW(kw){return kw<=50?'S':kw<=100?'M':kw<=200?'L':'XL';}
+const TIER={S:0,M:1,L:2,XL:3};
+function annuity(i,n){if(i<=0)return 1/n;const q=Math.pow(1+i,n);return i*q/(q-1);}
+/* CO2KostAufG 10-tier landlord share by kg CO2 / m² / a */
+function co2LandlordShare(kgPerSqm){
+  const t=[[12,0],[17,0.10],[22,0.20],[27,0.30],[32,0.40],[37,0.50],[42,0.60],[47,0.70],[52,0.80]];
+  for(const[lim,sh]of t)if(kgPerSqm<lim)return sh; return 0.95;
+}
+function co2Split(b,cfg){
+  let fossil=0;
+  if(cfg.cfgGen==='gas')fossil=1.0; else if(cfg.cfgGen==='hybrid')fossil=0.30; else if(cfg.cfgGen==='spitze')fossil=0.10;
+  if(cfg.cfgPeak==='gas')fossil=Math.max(fossil,0.15);
+  if(fossil<=0)return{applies:false};
+  const heat=annualHeat(b).kWh, gasInput=heat*fossil/0.95, co2=gasInput*0.20, perSqm=co2/(b.Flaeche||1);
+  const ll=co2LandlordShare(perSqm);
+  return{applies:true,perSqm,landlord:ll,tenant:1-ll};
+}
+function calculate(b,cfg){
+  const pw=estimatePower(b),heat=annualHeat(b),kW=pw.kW,kWh=heat.kWh;
+  const base=ASSUMPTIONS.eurPerKW[cfg.cfgPackage]||ASSUMPTIONS.eurPerKW.M;
+  const anlage=kW*base*ASSUMPTIONS.genFactor[cfg.cfgGen];
+  const techAdd=ASSUMPTIONS.hydAdd[cfg.cfgHyd]+ASSUMPTIONS.peakAdd[cfg.cfgPeak]+ASSUMPTIONS.bufAdd[cfg.cfgBuf]+ASSUMPTIONS.noiseAdd[cfg.cfgNoise]+ASSUMPTIONS.meterAdd;
+  const subtotal=anlage*ASSUMPTIONS.cxMult[cfg.cfgCx]*ASSUMPTIONS.dhwMult[cfg.cfgDHW]*(1+techAdd);
+  const planung=subtotal*ASSUMPTIONS.planningPct,risiko=subtotal*ASSUMPTIONS.riskPct,monitoring=anlage*ASSUMPTIONS.monPct[cfg.cfgMon];
+  const grossCapex=subtotal+planung+risiko+monitoring;
+  const subsidy=ASSUMPTIONS.subsidy,netCapex=grossCapex*(1-subsidy);
+  const i=ASSUMPTIONS.targetReturn,n=parseInt(cfg.cfgTerm);
+  const capAnnuity=netCapex*annuity(i,n);
+  const opexPct=ASSUMPTIONS.slaOpex[cfg.cfgSla]+ASSUMPTIONS.billingOpex;
+  const opex0=grossCapex*opexPct, scop=ASSUMPTIONS.scop[cfg.cfgGen];
+  const ePrice=(cfg.cfgGen==='gas'||cfg.cfgGen==='hybrid')?ASSUMPTIONS.gasPrice:ASSUMPTIONS.elecPrice;
+  const energy0=kWh/scop*ePrice;
+  const netEsc=ASSUMPTIONS.costIndex-ASSUMPTIONS.revIndex;
+  const levelMult=clamp(1+netEsc*n*0.45,0.90,1.22);
+  const opex=opex0*levelMult, energy=energy0*levelMult;
+  const revReq=capAnnuity+opex+energy;
+  const grundpreis=(capAnnuity+opex)*ASSUMPTIONS.fixedShare;
+  const arbeitspreis=(revReq-grundpreis)/kWh, heatPriceAll=revReq/kWh;
+  const monthlyTotal=revReq/12, monthlyPerWE=monthlyTotal/(b.WE||1), sqmMonth=monthlyTotal/(b.Flaeche||1);
+  const marginProxy=(capAnnuity-netCapex/n)/revReq;
+  const bufLiters=clamp(Math.round(kW*ASSUMPTIONS.bufLpkW[cfg.cfgBuf]/50)*50,300,4000);
+  return{kW,kWh,powerEst:pw.est,heatEst:heat.est,anlage,subtotal,planung,risiko,monitoring,grossCapex,subsidy,netCapex,
+    capAnnuity,opex,energy,revReq,grundpreis,arbeitspreis,heatPriceAll,monthlyTotal,monthlyPerWE,sqmMonth,marginProxy,scop,ePrice,levelMult,opexPct,bufLiters};
+}
+const KEY_FIELDS=[['Waermebedarf','Jahreswärmebedarf'],['Leistung','Leistung Bestand'],['Kesselalter','Kesselalter'],['VLT','Vorlauftemperatur'],['WW','Warmwasser'],['Sanierung','Sanierungsstand'],['AufstellAussen','Aufstellfläche außen'],['Baujahr','Baujahr'],['Flaeche','Wohnfläche'],['WE','Wohneinheiten']];
+function dataQuality(b){let p=0;const m=[];KEY_FIELDS.forEach(([k,l])=>{const v=b[k];const ok=v!==null&&v!==undefined&&v!==''&&v!=='unklar'&&v!=='unbekannt';if(ok)p++;else m.push(l);});return{score:Math.round(p/KEY_FIELDS.length*100),missing:m};}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function scoreEconomic(r){const hp=r.heatPriceAll;return clamp(100-(hp-0.13)/(0.27-0.13)*85,10,100);}
+function scoreTechnical(b,cfg){let s=100;if(b.VLT==='>65°C')s-=30;else if(b.VLT==='55-65°C')s-=12;else if(b.VLT==='unbekannt')s-=20;if(cfg.cfgCx==='hoch')s-=18;else if(cfg.cfgCx==='mittel')s-=6;if(cfg.cfgHyd==='strang')s-=15;else if(cfg.cfgHyd==='komplex')s-=8;if(b.AufstellAussen==='unklar')s-=12;if(b.NetzUnbekannt)s-=10;if(cfg.cfgGen==='sole')s-=6;return clamp(s,5,100);}
+function recommend(dq,r,b,cfg){
+  const eco=scoreEconomic(r),tech=scoreTechnical(b,cfg),score=0.40*dq.score+0.35*eco+0.25*tech;
+  let badge,gate,sub,cls;
+  if(score>=68){badge='Weiterverfolgen';gate='Bereit für Erstgespräch';sub='Datenlage und Indikation tragfähig für ein qualifiziertes Erstgespräch.';cls='go';}
+  else if(score>=46){badge='Nachqualifizieren';gate='Technische Vorprüfung nötig';sub='Grundsätzlich interessant, aber Daten- oder Technikrisiken vor Angebot klären.';cls='qual';}
+  else{badge='Nicht priorisieren';gate='Nicht ausreichend Daten';sub='Zu viele Unsicherheiten für eine belastbare Indikation.';cls='no';}
+  let c=dq.score;if(cfg.cfgCx==='hoch')c-=8;if(b.VLT==='unbekannt'||b.VLT==='>65°C')c-=8;if(b.NetzUnbekannt)c-=6;if(cfg.cfgEsc==='fest')c-=5;
+  const conf=c>=72?'hoch':(c>=52?'mittel':'niedrig');
+  return{score:Math.round(score),eco:Math.round(eco),tech:Math.round(tech),badge,gate,sub,cls,conf,confDots:conf==='hoch'?3:(conf==='mittel'?2:1)};
+}
+function buildRisks(b,cfg,r,co2){const comm=[],tech=[];
+  if(r.heatPriceAll>0.23)comm.push('Indikativer Wärmepreis über Marktniveau — Wettbewerbsfähigkeit prüfen.');
+  if(cfg.cfgEsc==='fest')comm.push('Festpreis ohne Indexierung — Kostensteigerungen treffen den Contractor.');
+  if(co2.applies&&co2.landlord>=0.5)comm.push('Hoher Vermieteranteil CO₂-Kosten (CO2KostAufG) — belastet die Marge.');
+  if(b.Vertrieb==='Erstkontakt')comm.push('Früher Vertriebsstatus — Mandat und Zahlungsbereitschaft unklar.');
+  if(parseInt(cfg.cfgTerm)>=20)comm.push('Lange Vertragslaufzeit erhöht Prognose- und Restwertrisiko.');
+  if(r.marginProxy<0.04)comm.push('Geringer Margenpuffer — sensibel gegenüber Kostensteigerungen.');
+  if(b.Energietraeger==='Fernwärme')comm.push('Bestand Fernwärme — Umstellungsfall, Anschluss-/Vertragslage klären.');
+  if(b.VLT==='>65°C'||b.VLT==='55-65°C'||b.VLT==='unbekannt')tech.push('Hohe/unklare Vorlauftemperatur — WP-Effizienz und Heizflächen prüfen.');
+  if(cfg.cfgNoise!=='standard')tech.push('Erhöhter Schallschutz — Aufstellort, Nachbarschaft und Genehmigung prüfen.');
+  if(b.AufstellAussen==='unklar')tech.push('Aufstellfläche Außeneinheit unklar — Schall, Abstand, Genehmigung offen.');
+  if(b.NetzUnbekannt)tech.push('Netzanschlussleistung unbekannt — Lastgang und Hausanschluss prüfen.');
+  if(b.Sanierung==='unsaniert')tech.push('Unsanierter Bestand — hoher spez. Wärmebedarf, Auslegung kritisch.');
+  if(cfg.cfgGen==='sole')tech.push('Erdsonden-Bohrung genehmigungs- und baugrundabhängig.');
+  if(cfg.cfgHyd==='strang')tech.push('Strangsanierung erforderlich — Eingriff in bewohnten Bestand.');
+  return{comm:comm.slice(0,5),tech:tech.slice(0,5)};}
+function nextActions(rec,dq){const a=[];
+  if(dq.missing.length)a.push('Fehlende Daten nachfordern: '+dq.missing.slice(0,3).join(', ')+'.');
+  if(rec.cls==='go'){a.push('Erstgespräch terminieren und Indikation versenden.');a.push('Förderpfad (BEG) grob vorprüfen.');}
+  else if(rec.cls==='qual'){a.push('Technische Vorprüfung / Vor-Ort-Termin beauftragen.');a.push('Vorlauftemperatur und Aufstellfläche verifizieren.');}
+  else{a.push('Datengrundlage vervollständigen, dann erneut bewerten.');}
+  a.push('Annahmen mit aktueller Paket-Kalkulation gegenrechnen.');return a.slice(0,5);}
+
+/* ============ RENDER ============ */
+let curPreset=0;
+const el=id=>document.getElementById(id),val=id=>el(id).value;
+const CFG_IDS=['cfgPackage','cfgGen','cfgDHW','cfgHyd','cfgPeak','cfgBuf','cfgNoise','cfgCx','cfgModel','cfgSla','cfgMon','cfgEsc','cfgTerm'];
+function getCfg(){const o={};CFG_IDS.forEach(id=>o[id]=val(id));return o;}
+const genLabel={luft:'Luft-Wasser-Wärmepumpe',sole:'Sole-Wasser-Wärmepumpe',hybrid:'Hybrid Wärmepumpe + Gas',gas:'Gas-Brennwert (Übergang)',spitze:'Wärmepumpe + Spitzenlast'};
+const monLabel={basic:'Monitoring Basic',opt:'Monitoring + Optimierung',stoer:'Monitoring + Störungsmanagement'};
+const slaLabel={basis:'Wartung Basis',komfort:'Wartung Komfort',premium:'Wartung Premium 24/7'};
+const modelLabel={voll:'Vollcontracting',waerme:'Wärmelieferung',teil:'Teilcontracting'};
+const toneClass={go:'k-go',qual:'k-qual',no:'k-no'};
+
+function applyPackageLock(b){
+  const req=packageForKW(estimatePower(b).kW),sel=el('cfgPackage');
+  [...sel.options].forEach(o=>{o.disabled=TIER[o.value]<TIER[req];});
+  if(TIER[sel.value]<TIER[req])sel.value=req;
+  el('pkgHint').textContent='auto: '+req+' ('+fmtNum(estimatePower(b).kW)+' kW)';
+}
+function render(){
+  const b=BUILDINGS[PRESETS[curPreset].bIdx],cfg=getCfg();
+  ASSUMPTIONS.term=parseInt(cfg.cfgTerm);
+  const r=calculate(b,cfg),dq=dataQuality(b),co2=co2Split(b,cfg),rec=recommend(dq,r,b,cfg),risks=buildRisks(b,cfg,r,co2),acts=nextActions(rec,dq);
+  const pw=estimatePower(b),ht=annualHeat(b),estTag='<span class="est">Schätzung</span>';
+
+  el('genKw').textContent='Auslegung ~'+fmtNum(pw.kW)+' kW';
+  el('bufL').textContent='≈ '+fmtNum(r.bufLiters)+' L';
+
+  el('kDQ').textContent=dq.score+' / 100'; el('kDQh').textContent=dq.missing.length?dq.missing.length+' Felder offen':'vollständig';
+  el('kRec').textContent=rec.badge; el('kRech').textContent='Score '+rec.score+'/100 · Konfidenz '+rec.conf;
+  el('kpRec').className='kpi '+toneClass[rec.cls];
+  el('kSqm').textContent=fmtSqm(r.sqmMonth);
+  el('kPrice').textContent=fmtCt(r.arbeitspreis);
+
+  el('facts').innerHTML=`
+    <tr><td>Region · Typ</td><td>${b.Region} · ${b.Gebaeudetyp}</td></tr>
+    <tr><td>Wohneinheiten · Fläche</td><td>${b.WE} WE · ${fmtNum(b.Flaeche)} m²</td></tr>
+    <tr><td>Spez. Wärmebedarf</td><td>${fmtNum(ht.kWh/b.Flaeche)} kWh/m²·a</td></tr>
+    <tr><td>Baujahr · Sanierung</td><td>${b.Baujahr} · ${b.Sanierung}</td></tr>
+    <tr><td>Energieträger alt</td><td>${b.Energietraeger}</td></tr>
+    <tr><td>Jahreswärmebedarf</td><td>${fmtNum(ht.kWh)} kWh${ht.est?estTag:''}</td></tr>
+    <tr><td>Heizlast (Auslegung)</td><td>${fmtNum(pw.kW)} kW${pw.est?estTag:''}</td></tr>
+    <tr><td>Vorlauftemperatur</td><td>${b.VLT}</td></tr>
+    <tr><td>Aufstellfläche außen · Netz</td><td>${b.AufstellAussen} · ${b.NetzUnbekannt?'unbekannt':'bekannt'}</td></tr>`;
+
+  el('reco').className='reco '+rec.cls;
+  el('recoBadge').textContent=rec.badge;el('gateMain').textContent=rec.gate;el('gateSub').textContent=rec.sub;
+  el('confLabel').textContent=rec.conf;[1,2,3].forEach(i=>el('cd'+i).className='d'+(i<=rec.confDots?' on':''));
+  el('gauge').innerHTML=gaugeSVG(dq.score);
+  const comp=[['Stammdaten',Math.min(100,dq.score+8)],['Technik',rec.tech],['Wirtschaftlichkeit',rec.eco]];
+  el('completeList').innerHTML=comp.map(c=>{const col=c[1]>=70?'var(--go)':(c[1]>=50?'var(--qual)':'var(--no)');return `<div class="item"><span>${c[0]}</span><span class="mono">${Math.round(c[1])}%</span></div><div class="bar"><div style="width:${c[1]}%;background:${col}"></div></div>`;}).join('');
+  el('riskComm').innerHTML=lst(risks.comm,'Keine wesentlichen markiert.');
+  el('riskTech').innerHTML=lst(risks.tech,'Keine wesentlichen markiert.');
+  el('missList').innerHTML=lst(dq.missing.slice(0,5),'Keine fehlenden Pflichtfelder.');
+  el('actList').innerHTML=lst(acts,'—');
+
+  const co2Line = co2.applies
+    ? `${pct(co2.landlord)} Vermieter : ${pct(co2.tenant)} Mieter`
+    : 'entfällt — kein fossiler Brennstoff';
+  el('ofObj').textContent=b.Objektname.replace('MFH Demo ','');
+  el('ofFor').textContent=`${modelLabel[cfg.cfgModel]} · für ${b.Kunde}`;
+  el('ofSqm').textContent=fmtSqm(r.sqmMonth);
+  el('ofLines').innerHTML=`
+    ${line('Systempaket','Erzeuger, Hydraulik & Inbetriebnahme',`Paket ${cfg.cfgPackage}`,genLabel[cfg.cfgGen]+' · ~'+fmtNum(r.kW)+' kW')}
+    ${line('Einmaliger Eigenanteil','Investition trägt der Contractor','0 €','Contracting-Modell')}
+    ${line('Grundpreis (Leistungspreis)','feste jährliche Bereitstellung',fmtEUR(r.grundpreis)+' / a',fmtEUR(r.grundpreis/12)+' / Monat')}
+    ${line('Arbeitspreis (Wärmepreis)','je gelieferte Kilowattstunde',fmtCt(r.arbeitspreis),cfg.cfgEsc==='indexiert'?'indexiert':'fest')}
+    ${line('Kosten je Wohneinheit','Durchschnitt über alle WE',fmtEUR(r.monthlyPerWE)+' / Monat','')}
+    ${line('Geschätzte Jahreskosten','gesamtes Objekt, alle WE',fmtEUR(r.revReq)+' / a',fmtNum(r.kWh)+' kWh/a')}
+    ${line('CO₂-Kostenaufteilung','nach CO2KostAufG (Stufenmodell)',co2.applies?pct(co2.landlord)+' : '+pct(co2.tenant):'entfällt',co2.applies?'Vermieter : Mieter':'kein Brennstoff')}
+    ${line('Vertragslaufzeit','',cfg.cfgTerm+' Jahre',cfg.cfgEsc==='indexiert'?'mit Preisgleitung':'Festpreis')}`;
+  el('ofIncl').innerHTML=`<b>Im Contracting enthalten:</b><br><span class="pill">Wärmeerzeuger &amp; Hydraulik</span><span class="pill">${slaLabel[cfg.cfgSla]}</span><span class="pill">${monLabel[cfg.cfgMon]}</span><span class="pill">Submetering je WE</span><span class="pill">Abrechnungsservice</span><span class="pill">24/7 Betriebsführung</span>`;
+  el('ofNote').innerHTML=`Förderung BEG 30 % berücksichtigt — bereits im Wärmepreis eingerechnet.`;
+
+  buildPrintReport(b,cfg,r,dq,rec,risks,acts,co2);
+}
+function line(k,sub,v,vsub){return `<div class="line"><div class="k">${k}${sub?`<small>${sub}</small>`:''}</div><div class="v">${v}${vsub?`<small>${vsub}</small>`:''}</div></div>`;}
+function lst(a,e){return a.length?a.map(x=>`<li>${x}</li>`).join(''):`<li style="color:var(--ink-faint)">${e}</li>`;}
+function gaugeSVG(s){const R=39,C=2*Math.PI*R,off=C*(1-s/100),col=s>=70?'#15924f':(s>=50?'#bd821c':'#c93b32');
+  return `<circle cx="48" cy="48" r="${R}" fill="none" stroke="#e7e9ef" stroke-width="9"/><circle cx="48" cy="48" r="${R}" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 48 48)"/><text x="48" y="46" text-anchor="middle" font-size="22" font-weight="800" fill="#172033" font-family="IBM Plex Mono">${s}</text><text x="48" y="62" text-anchor="middle" font-size="9.5" fill="#8b94a6">Datenqual.</text>`;}
+
+function refreshSliders(){SLIDERS.forEach(s=>{const i=el('sl_'+s.key);if(i){i.value=s.get();el('sv_'+s.key).textContent=s.fmt(s.get());}});}
+function buildSliders(){
+  el('assGrid').innerHTML=SLIDERS.map(s=>`<div class="slider"><div class="top"><span class="nm">${s.label}<span class="info">i<span class="tip">${s.tip}</span></span></span><span class="vl" id="sv_${s.key}">${s.fmt(s.get())}</span></div><input type="range" id="sl_${s.key}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.get()}"></div>`).join('');
+  SLIDERS.forEach(s=>{const i=el('sl_'+s.key);i.addEventListener('input',()=>{s.set(parseFloat(i.value));el('sv_'+s.key).textContent=s.fmt(parseFloat(i.value));render();});});
+}
+function applyScenario(name){
+  curScen=name;const s=SCEN[name];
+  ['S','M','L','XL'].forEach(k=>ASSUMPTIONS.eurPerKW[k]=Math.round(BASE_EUR[k]*s.eurMult));
+  ASSUMPTIONS.costIndex=s.costIndex;ASSUMPTIONS.revIndex=s.revIndex;ASSUMPTIONS.riskPct=s.riskPct;ASSUMPTIONS.planningPct=s.planningPct;
+  document.querySelectorAll('#scenBar button').forEach(btn=>btn.classList.toggle('on',btn.dataset.sc===name));
+  el('scenDesc').innerHTML=s.desc;
+  refreshSliders();render();
+}
+
+function buildPrintReport(b,cfg,r,dq,rec,risks,acts,co2){
+  const date=new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'});
+  const segs=[['Anlage',r.anlage,'#0f9269'],['Komplexität/WW/Technik',r.subtotal-r.anlage,'#13a878'],['Planung',r.planung,'#3257a8'],['Risikopuffer',r.risiko,'#bd5a32'],['Monitoring',r.monitoring,'#bd821c']];
+  const tot=segs.reduce((s,x)=>s+x[1],0);
+  const bar=segs.map(s=>`<div style="width:${(s[1]/tot*100).toFixed(1)}%;background:${s[2]}"></div>`).join('');
+  const leg=segs.map(s=>`<span><i style="background:${s[2]}"></i>${s[0]} · ${fmtEUR(s[1])}</span>`).join('');
+  const co2row=co2.applies?`${pct(co2.landlord)} Vermieter / ${pct(co2.tenant)} Mieter (${fmtNum(co2.perSqm)} kg/m²·a)`:'entfällt — kein fossiler Brennstoff';
+  el('printReport').innerHTML=`
+    <div class="phead"><div><div class="pbrand">CALDORA · RICHTPREISINDIKATION CONTRACTING</div><h1>${b.Objektname.replace('MFH Demo ','')}</h1></div><div class="pdate">${date}<br>für ${b.Kunde}<br>${modelLabel[cfg.cfgModel]} · ${curScen==='base'?'Basisfall':curScen==='best'?'Best Case':'Worst Case'}</div></div>
+    <div class="pkpis">
+      <div class="pk a"><div class="l">Wärmekosten</div><div class="v">${fmtSqm(r.sqmMonth)}/m²·Mt</div></div>
+      <div class="pk b"><div class="l">Arbeitspreis</div><div class="v">${fmtCt(r.arbeitspreis)}</div></div>
+      <div class="pk c"><div class="l">Kosten je WE</div><div class="v">${fmtEUR(r.monthlyPerWE)}/Mt</div></div>
+      <div class="pk d"><div class="l">Datenqualität</div><div class="v">${dq.score}/100</div></div>
+    </div>
+    <div class="preco ${rec.cls}">${rec.badge} · ${rec.gate}<small>${rec.sub} · Konfidenz ${rec.conf}</small></div>
+    <section><h3 class="em">Objektzusammenfassung</h3><table><tr><td>Region · Typ</td><td>${b.Region} · ${b.Gebaeudetyp}</td></tr><tr><td>Wohneinheiten · Fläche</td><td>${b.WE} WE · ${fmtNum(b.Flaeche)} m²</td></tr><tr><td>Spez. Wärmebedarf</td><td>${fmtNum(r.kWh/b.Flaeche)} kWh/m²·a</td></tr><tr><td>Baujahr · Sanierung</td><td>${b.Baujahr} · ${b.Sanierung}</td></tr><tr><td>Wärmebedarf · Heizlast</td><td>${fmtNum(r.kWh)} kWh · ${fmtNum(r.kW)} kW (Paket ${cfg.cfgPackage})</td></tr></table></section>
+    <section><h3 class="clay">Kundenangebot — Richtpreis</h3><table><tr><td>Systempaket · Erzeuger</td><td>${cfg.cfgPackage} · ${genLabel[cfg.cfgGen]}</td></tr><tr><td>Einmaliger Eigenanteil</td><td>0 € (Contracting)</td></tr><tr><td>Grundpreis</td><td>${fmtEUR(r.grundpreis)} / a</td></tr><tr><td>Arbeitspreis</td><td>${fmtCt(r.arbeitspreis)} (${cfg.cfgEsc==='indexiert'?'indexiert':'fest'})</td></tr><tr><td>Wärmekosten je m²</td><td>${fmtSqm(r.sqmMonth)} / Monat</td></tr><tr><td>Kosten je WE</td><td>${fmtEUR(r.monthlyPerWE)} / Monat</td></tr><tr><td>Geschätzte Jahreskosten</td><td>${fmtEUR(r.revReq)} / a</td></tr><tr><td>CO₂-Aufteilung (CO2KostAufG)</td><td>${co2row}</td></tr><tr><td>Laufzeit · Wartung</td><td>${cfg.cfgTerm} J · ${slaLabel[cfg.cfgSla]}</td></tr></table></section>
+    <section><h3>CAPEX-Zusammensetzung (intern)</h3><div class="pbar">${bar}</div><div class="pleg">${leg}</div>
+      <table><tr><td>Brutto-CAPEX (Spanne)</td><td>${fmtEUR(r.grossCapex*0.9)} – ${fmtEUR(r.grossCapex*1.15)}</td></tr><tr><td>Netto-CAPEX nach Förderung (BEG ${pct(r.subsidy)})</td><td>${fmtEUR(r.netCapex)}</td></tr><tr><td>Ziel-Rendite · Kosten-/Ertragsindex</td><td>${pct(ASSUMPTIONS.targetReturn)} · ${pct(ASSUMPTIONS.costIndex)}/${pct(ASSUMPTIONS.revIndex)} p.a.</td></tr></table></section>
+    <section><div class="cols2"><div><h3>Fehlende Daten</h3><ul>${(dq.missing.length?dq.missing.slice(0,5):['—']).map(x=>`<li>${x}</li>`).join('')}</ul></div><div><h3>Nächste Schritte</h3><ul>${acts.map(x=>`<li>${x}</li>`).join('')}</ul></div></div></section>
+    <section><div class="cols2"><div><h3 class="clay">Kommerzielle Risiken</h3><ul>${(risks.comm.length?risks.comm:['—']).map(x=>`<li>${x}</li>`).join('')}</ul></div><div><h3 class="em">Technische Risiken</h3><ul>${(risks.tech.length?risks.tech:['—']).map(x=>`<li>${x}</li>`).join('')}</ul></div></div></section>
+    <div class="pfoot">Caldora Demo-Prototyp · fiktiver Name, kein realer Markenbezug · Keine verbindliche technische, wirtschaftliche oder rechtliche Aussage · synthetische Annahmen.</div>`;
+}
+function exportPDF(){window.print();}
+
+/* ============ NAV + INIT ============ */
+function selectPreset(i){curPreset=i;const p=PRESETS[i],b=BUILDINGS[p.bIdx];
+  for(const k in p.cfg)el(k).value=p.cfg[k];
+  applyPackageLock(b);el('objSwitch').value=String(i);
+  document.querySelectorAll('.pset').forEach((c,j)=>c.classList.toggle('sel',j===i));render();}
+function setupNav(){
+  const items=[...document.querySelectorAll('.nav')];
+  items.forEach(n=>n.addEventListener('click',()=>{const t=document.getElementById(n.dataset.target);if(t){const y=t.getBoundingClientRect().top+window.scrollY-76;window.scrollTo({top:y,behavior:'smooth'});}}));
+  const sections=items.map(n=>document.getElementById(n.dataset.target)).filter(Boolean);
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const id=e.target.id;items.forEach(n=>n.classList.toggle('active',n.dataset.target===id));}});},{rootMargin:'-45% 0px -50% 0px',threshold:0});
+  sections.forEach(s=>io.observe(s));
+}
+function init(){
+  el('objSwitch').addEventListener('change',e=>selectPreset(parseInt(e.target.value)));
+  el('presets').innerHTML=PRESETS.map((p,i)=>{const b=BUILDINGS[p.bIdx];return `<button class="pset" onclick="selectPreset(${i})"><div class="ptop"><span class="pcity">${p.city}</span><span class="ptone ${p.tone}">${p.tone==='go'?'Chance':p.tone==='qual'?'Prüfen':'Risiko'}</span></div><div class="pchar">${p.char}</div><div class="pfacts"><span class="pf">${b.WE} WE</span><span class="pf">${fmtNum(b.Flaeche)} m²</span><span class="pf">Paket ${packageForKW(estimatePower(b).kW)}</span><span class="pf">${b.Energietraeger}</span></div></button>`;}).join('');
+  el('roadGrid').innerHTML=ROADMAP.map(r=>`<div class="rcard"><span class="konzept">Konzept</span><div class="ic">${r.ic}</div><h3>${r.t}</h3><p>${r.d}</p></div>`).join('');
+  buildSliders();
+  CFG_IDS.forEach(id=>el(id).addEventListener('change',render));
+  document.querySelectorAll('#scenBar button').forEach(btn=>btn.addEventListener('click',()=>applyScenario(btn.dataset.sc)));
+  setupNav();
+  el('scenDesc').innerHTML=SCEN.base.desc;
+  selectPreset(1);
+}
+init();
+</script>
+</body>
+</html>
